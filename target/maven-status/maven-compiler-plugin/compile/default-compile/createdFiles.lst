@@ -1,0 +1,15 @@
+nl\ramondevaan\taskestimation\service\DeveloperService.class
+nl\ramondevaan\taskestimation\web\HomePage$3.class
+nl\ramondevaan\taskestimation\service\EstimationService.class
+nl\ramondevaan\taskestimation\repository\TaskRepository.class
+nl\ramondevaan\taskestimation\repository\DeveloperRepository.class
+nl\ramondevaan\taskestimation\TaskEstimationApplication.class
+nl\ramondevaan\taskestimation\TaskEstimationConfig.class
+nl\ramondevaan\taskestimation\web\HomePage.class
+nl\ramondevaan\taskestimation\web\HomePage$1.class
+nl\ramondevaan\taskestimation\model\Developer.class
+nl\ramondevaan\taskestimation\model\Task.class
+nl\ramondevaan\taskestimation\repository\EstimationRepository.class
+nl\ramondevaan\taskestimation\web\HomePage$2.class
+nl\ramondevaan\taskestimation\model\Estimation.class
+nl\ramondevaan\taskestimation\service\TaskService.class
