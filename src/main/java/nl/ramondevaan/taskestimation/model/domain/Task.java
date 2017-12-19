@@ -1,6 +1,8 @@
-package nl.ramondevaan.taskestimation.model;
+package nl.ramondevaan.taskestimation.model.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +11,8 @@ import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data @Entity public class Task {
+@Data @Entity @EqualsAndHashCode(of = { "id" }) @ToString(exclude = {
+        "estimations" }) public class Task {
     @Id @GeneratedValue private Long id;
     private LocalDateTime created;
 

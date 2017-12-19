@@ -1,6 +1,6 @@
 package nl.ramondevaan.taskestimation.repository;
 
-import nl.ramondevaan.taskestimation.model.Developer;
+import nl.ramondevaan.taskestimation.model.domain.Developer;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
