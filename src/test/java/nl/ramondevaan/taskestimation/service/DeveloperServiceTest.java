@@ -1,10 +1,9 @@
 package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Developer;
-import nl.ramondevaan.taskestimation.model.view.developer.DeveloperAdd;
+import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +18,6 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class) public class DeveloperServiceTest {
-
     @Mock private DeveloperRepository developerRepository;
     @Mock private ModelMapper modelMapper;
 
@@ -48,8 +46,8 @@ import static org.mockito.Mockito.*;
     }
 
     @Test public void addDeveloper() {
-        DeveloperAdd da = mock(DeveloperAdd.class);
-        Developer    d  = mock(Developer.class);
+        DeveloperEdit da = mock(DeveloperEdit.class);
+        Developer     d  = mock(Developer.class);
 
         when(modelMapper.map(da, Developer.class)).thenReturn(d);
 

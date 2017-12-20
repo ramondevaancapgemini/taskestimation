@@ -9,30 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
 
 @RunWith(SpringRunner.class) @SpringBootTest public class DeveloperRepositoryTest {
-
     @Autowired private DeveloperRepository developerRepository;
 
-    private LocalDateTime dateTime;
+    private Instant instant = Instant
+            .from(LocalDateTime.of(2017, Month.AUGUST, 20, 15, 37, 23));
     private Developer developer;
-    private boolean isSetUp;
 
     @Before public void setUp() {
-        if (!isSetUp) {
-            dateTime = LocalDateTime.of(2017, Month.AUGUST, 20, 15, 37, 23);
-            isSetUp = true;
-        }
         developer = new Developer();
-        developer.setCreated(dateTime);
+        developer.setCreated(instant);
         developer.setGivenName("Test");
         developer.setSurnamePrefix("Test");
         developer.setSurname("Test");
         developer.setEmail("test@test.test");
-        developer.setBirthDate(dateTime);
         developer.setEstimations(Collections.emptyList());
     }
 

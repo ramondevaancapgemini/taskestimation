@@ -4,7 +4,6 @@ import nl.ramondevaan.taskestimation.model.domain.Task;
 import nl.ramondevaan.taskestimation.model.view.task.TaskAdd;
 import nl.ramondevaan.taskestimation.repository.TaskRepository;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -20,8 +19,6 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class) @SpringBootTest public class TaskServiceTest {
-
-
     @Mock private TaskRepository taskRepository;
     @Mock private ModelMapper modelMapper;
 
@@ -56,8 +53,7 @@ import static org.mockito.Mockito.*;
         when(modelMapper.map(da, Task.class)).thenReturn(d);
 
         taskService.addTask(da);
-        ArgumentCaptor<Task> captor = ArgumentCaptor
-                .forClass(Task.class);
+        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
         verify(taskRepository, times(1)).save(captor.capture());
 
         Assert.assertEquals(d, captor.getValue());
