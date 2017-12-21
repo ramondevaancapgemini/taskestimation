@@ -14,16 +14,22 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class) public class DeveloperServiceTest {
-    @Mock private DeveloperRepository developerRepository;
-    @Mock private ModelMapper modelMapper;
+@RunWith(MockitoJUnitRunner.class)
+public class DeveloperServiceTest {
+    @Mock
+    private DeveloperRepository developerRepository;
+    @Mock
+    private ModelMapper modelMapper;
 
-    @InjectMocks private DeveloperService developerService;
+    @InjectMocks
+    private DeveloperService developerService;
 
-    @Test public void getAllDevelopers() {
+    @Test
+    public void getAllDevelopers() {
         List<Developer> developers = new ArrayList<>();
 
         final int numDev = 10;
@@ -37,15 +43,17 @@ import static org.mockito.Mockito.*;
         Assert.assertEquals(developers, developerService.getAllDevelopers());
     }
 
-    @Test public void getDeveloper() {
+    @Test
+    public void getDeveloper() {
         Developer d = mock(Developer.class);
 
         final long id = 1;
-        when(developerRepository.findOne(id)).thenReturn(d);
+        when(developerRepository.findById(id)).thenReturn(Optional.of(d));
         Assert.assertEquals(d, developerService.getDeveloper(id));
     }
 
-    @Test public void addDeveloper() {
+    @Test
+    public void addDeveloper() {
         DeveloperEdit da = mock(DeveloperEdit.class);
         Developer     d  = mock(Developer.class);
 
@@ -59,12 +67,13 @@ import static org.mockito.Mockito.*;
         Assert.assertEquals(d, captor.getValue());
     }
 
-    @Test public void removeDeveloper() {
+    @Test
+    public void removeDeveloper() {
         final long id = 1;
 
         developerService.removeDeveloper(id);
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(developerRepository, times(1)).delete(captor.capture());
+        verify(developerRepository, times(1)).deleteById(captor.capture());
 
         Assert.assertEquals(captor.getValue().longValue(), id);
     }

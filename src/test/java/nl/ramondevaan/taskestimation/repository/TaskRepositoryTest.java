@@ -1,28 +1,30 @@
 package nl.ramondevaan.taskestimation.repository;
 
+import nl.ramondevaan.taskestimation.TestConfig;
 import nl.ramondevaan.taskestimation.model.domain.Task;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collections;
 
-@RunWith(SpringRunner.class) @SpringBootTest public class TaskRepositoryTest {
-    @Autowired private TaskRepository taskRepository;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = TestConfig.class)
+public class TaskRepositoryTest {
+    @Autowired
+    private TaskRepository taskRepository;
 
-    private Instant instant = Instant
-            .from(LocalDateTime.of(2017, Month.AUGUST, 20, 15, 37, 23));
+    private Instant instant = Instant.now();
     private Task task;
-    private boolean isSetUp;
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         task = new Task();
         task.setCreated(instant);
         task.setName("Test");
@@ -30,25 +32,29 @@ import java.util.Collections;
         task.setEstimations(Collections.emptyList());
     }
 
-    @Test public void addTask() {
+    @Test
+    public void addTask() {
         Task temp = taskRepository.save(task);
 
         Long id = temp.getId();
         Assert.assertNotNull(id);
 
-        Task ret = taskRepository.findOne(id);
+        Task ret = taskRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find task with id %d", id)));
         Assert.assertEquals(task, ret);
 
-        taskRepository.delete(id);
+        taskRepository.deleteById(id);
     }
 
-    @Test public void removeTask() {
+    @Test
+    public void removeTask() {
         Long id = taskRepository.save(task).getId();
 
-        Assert.assertNotNull(taskRepository.findOne(id));
+        Assert.assertTrue(taskRepository.findById(id).isPresent());
 
-        taskRepository.delete(id);
+        taskRepository.deleteById(id);
 
-        Assert.assertNull(taskRepository.findOne(id));
+        Assert.assertFalse(taskRepository.findById(id).isPresent());
     }
 }

@@ -1,5 +1,6 @@
 package nl.ramondevaan.taskestimation.repository;
 
+import nl.ramondevaan.taskestimation.TestConfig;
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.domain.Estimation;
 import nl.ramondevaan.taskestimation.model.domain.Task;
@@ -9,27 +10,30 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collections;
 
-@RunWith(SpringRunner.class) @SpringBootTest public class EstimationRepositoryTest {
-    @Autowired private DeveloperRepository developerRepository;
-    @Autowired private TaskRepository taskRepository;
-    @Autowired private EstimationRepository estimationRepository;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = TestConfig.class)
+public class EstimationRepositoryTest {
+    @Autowired
+    private DeveloperRepository developerRepository;
+    @Autowired
+    private TaskRepository taskRepository;
+    @Autowired
+    private EstimationRepository estimationRepository;
 
-    private Instant instant = Instant
-            .from(LocalDateTime.of(2017, Month.AUGUST, 20, 15, 37, 23));
+    private Instant instant = Instant.now();
     private Task task;
     private Developer developer;
     private Estimation estimation;
-    private boolean isSetUp;
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         task = new Task();
         task.setCreated(instant);
         task.setName("Test");
@@ -54,27 +58,34 @@ import java.util.Collections;
         developerRepository.save(developer);
     }
 
-    @Test public void addEstimation() {
+    @Test
+    public void addEstimation() {
         Long id = estimationRepository.save(estimation).getId();
 
         Assert.assertNotNull(id);
 
-        Assert.assertEquals(estimationRepository.findOne(id), estimation);
+        Assert.assertEquals(estimationRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find estimation with id %d",
+                                id
+                        ))), estimation);
 
-        estimationRepository.delete(id);
+        estimationRepository.deleteById(id);
     }
 
-    @Test public void removeEstimation() {
+    @Test
+    public void removeEstimation() {
         Long id = estimationRepository.save(estimation).getId();
 
-        Assert.assertNotNull(estimationRepository.findOne(id));
+        Assert.assertTrue(estimationRepository.findById(id).isPresent());
 
-        estimationRepository.delete(id);
+        estimationRepository.deleteById(id);
 
-        Assert.assertNull(estimationRepository.findOne(id));
+        Assert.assertFalse(estimationRepository.findById(id).isPresent());
     }
 
-    @Test public void updateEstimation() {
+    @Test
+    public void updateEstimation() {
         Long id = estimationRepository.save(estimation).getId();
 
         int newValue = estimation.getValue() + 1;
@@ -82,15 +93,18 @@ import java.util.Collections;
 
         estimationRepository.save(estimation);
 
-        Assert.assertEquals(newValue,
-                estimationRepository.findOne(id).getValue()
-        );
+        Assert.assertEquals(newValue, estimationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Could not find estimation with id %d",
+                                id
+                        ))).getValue());
 
-        estimationRepository.delete(id);
+        estimationRepository.deleteById(id);
     }
 
-    @After public void tearDown() {
-        taskRepository.delete(task.getId());
-        developerRepository.delete(developer.getId());
+    @After
+    public void tearDown() {
+        taskRepository.deleteById(task.getId());
+        developerRepository.deleteById(developer.getId());
     }
 }

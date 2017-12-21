@@ -18,18 +18,26 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class) public class EstimationServiceTest {
-    @Mock private EstimationRepository estimationRepository;
-    @Mock private TaskRepository taskRepository;
-    @Mock private DeveloperRepository developerRepository;
-    @Mock private ModelMapper modelMapper;
+@RunWith(MockitoJUnitRunner.class)
+public class EstimationServiceTest {
+    @Mock
+    private EstimationRepository estimationRepository;
+    @Mock
+    private TaskRepository taskRepository;
+    @Mock
+    private DeveloperRepository developerRepository;
+    @Mock
+    private ModelMapper modelMapper;
 
-    @InjectMocks private EstimationService estimationService;
+    @InjectMocks
+    private EstimationService estimationService;
 
-    @Test public void getAllEstimations() {
+    @Test
+    public void getAllEstimations() {
         final int numEst = 10;
 
         List<Estimation> estimations = new ArrayList<>();
@@ -43,16 +51,18 @@ import static org.mockito.Mockito.*;
         Assert.assertEquals(estimationService.getAllEstimations(), estimations);
     }
 
-    @Test public void getEstimation() {
+    @Test
+    public void getEstimation() {
         Estimation e = mock(Estimation.class);
 
         final long id = 1;
 
-        when(estimationRepository.findOne(id)).thenReturn(e);
+        when(estimationRepository.findById(id)).thenReturn(Optional.of(e));
         Assert.assertEquals(estimationService.getEstimation(id), e);
     }
 
-    @Test public void addEstimation() {
+    @Test
+    public void addEstimation() {
         final long developerId = 1;
         final long taskId      = 5;
 
@@ -69,15 +79,16 @@ import static org.mockito.Mockito.*;
 
         when(add.getDeveloperId()).thenReturn(developerId);
         when(add.getTaskId()).thenReturn(taskId);
-        when(developerRepository.findOne(developerId)).thenReturn(d);
-        when(taskRepository.findOne(taskId)).thenReturn(t);
+        when(developerRepository.findById(developerId))
+                .thenReturn(Optional.of(d));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(t));
         when(modelMapper.map(add, Estimation.class)).thenReturn(e);
         estimationService.addEstimation(add);
 
         verify(estimationRepository, times(1)).save(captor.capture());
-        verify(taskRepository, times(1)).findOne(taskCaptor.capture());
+        verify(taskRepository, times(1)).findById(taskCaptor.capture());
         verify(developerRepository, times(1))
-                .findOne(developerCaptor.capture());
+                .findById(developerCaptor.capture());
 
         Assert.assertEquals(captor.getValue(), e);
         Assert.assertEquals(taskCaptor.getValue().longValue(), taskId);
@@ -86,12 +97,13 @@ import static org.mockito.Mockito.*;
         );
     }
 
-    @Test public void removeEstimation() {
+    @Test
+    public void removeEstimation() {
         final long id = 1;
 
         estimationService.removeEstimation(id);
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(estimationRepository, times(1)).delete(captor.capture());
+        verify(estimationRepository, times(1)).deleteById(captor.capture());
 
         Assert.assertEquals(captor.getValue().longValue(), id);
     }

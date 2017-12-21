@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css"
+          href="vendor/semantic-ui/semantic.min.css">
+    <script src="vendor/jquery/jquery-3.2.1.min.js"
+            crossorigin="anonymous"></script>
+    <script src="vendor/semantic-ui/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+<div class="ui fixed inverted menu">
+    <div class="ui container">
+        <a href="#" class="header item">
+            Task Estimation
+        </a>
+        <a href="#" class="item">Home</a>
+        <div class="ui simple dropdown item">
+            Estimations
+        </div>
+        <div class="ui simple dropdown item">
+            Developer <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="#">List developers</a>
+                <a class="item" href="#">Add developer</a>
+            </div>
+        </div>
+        <div class="ui simple dropdown item">
+            Task <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="#">List tasks</a>
+                <a class="item" href="#">Add task</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui main text container" id="addDeveloper" wicket:id="addDeveloper">
+    Add developer
+</div>
+
+</body>
+</html>

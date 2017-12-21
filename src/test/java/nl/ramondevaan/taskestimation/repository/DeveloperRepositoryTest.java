@@ -1,27 +1,30 @@
 package nl.ramondevaan.taskestimation.repository;
 
+import nl.ramondevaan.taskestimation.TestConfig;
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collections;
 
-@RunWith(SpringRunner.class) @SpringBootTest public class DeveloperRepositoryTest {
-    @Autowired private DeveloperRepository developerRepository;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = TestConfig.class)
+public class DeveloperRepositoryTest {
+    @Autowired
+    private DeveloperRepository developerRepository;
 
-    private Instant instant = Instant
-            .from(LocalDateTime.of(2017, Month.AUGUST, 20, 15, 37, 23));
+    private Instant instant = Instant.now();
     private Developer developer;
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         developer = new Developer();
         developer.setCreated(instant);
         developer.setGivenName("Test");
@@ -31,25 +34,31 @@ import java.util.Collections;
         developer.setEstimations(Collections.emptyList());
     }
 
-    @Test public void addTask() {
+    @Test
+    public void addDeveloper() {
         Developer temp = developerRepository.save(developer);
 
         Long id = temp.getId();
         Assert.assertNotNull(id);
 
-        Developer ret = developerRepository.findOne(id);
+        Developer ret = developerRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find developer with id %d",
+                                id
+                        )));
         Assert.assertEquals(developer, ret);
 
-        developerRepository.delete(id);
+        developerRepository.deleteById(id);
     }
 
-    @Test public void removeTask() {
+    @Test
+    public void removeDeveloper() {
         Long id = developerRepository.save(developer).getId();
 
-        Assert.assertNotNull(developerRepository.findOne(id));
+        Assert.assertTrue(developerRepository.findById(id).isPresent());
 
-        developerRepository.delete(id);
+        developerRepository.deleteById(id);
 
-        Assert.assertNull(developerRepository.findOne(id));
+        Assert.assertFalse(developerRepository.findById(id).isPresent());
     }
 }

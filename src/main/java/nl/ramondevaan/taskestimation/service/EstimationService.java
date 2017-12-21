@@ -9,11 +9,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.time.Instant;
+
 @Service
 public class EstimationService {
-    @Autowired private EstimationRepository estimationRepository;
-    @Autowired private DeveloperRepository developerRepository;
-    @Autowired private TaskRepository taskRepository;
+    @Autowired
+    private EstimationRepository estimationRepository;
+    @Autowired
+    private DeveloperRepository developerRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     private ModelMapper modelMapper;
 
@@ -26,19 +32,32 @@ public class EstimationService {
     }
 
     public Estimation getEstimation(long id) {
-        return estimationRepository.findOne(id);
+        return estimationRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find estimation with id %d",
+                                id
+                        )));
     }
 
     public void addEstimation(EstimationAdd e) {
         Estimation t = modelMapper.map(e, Estimation.class);
 
-        t.setDeveloper(developerRepository.findOne(e.getDeveloperId()));
-        t.setTask(taskRepository.findOne(e.getTaskId()));
+        t.setDeveloper(developerRepository.findById(e.getDeveloperId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Could not find developer with id %d",
+                                e.getDeveloperId()
+                        ))));
+        t.setTask(taskRepository.findById(e.getTaskId()).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find task with id %d",
+                                e.getTaskId()
+                        ))));
+        t.setCreated(Instant.now());
 
         estimationRepository.save(t);
     }
 
     public void removeEstimation(long id) {
-        estimationRepository.delete(id);
+        estimationRepository.deleteById(id);
     }
 }

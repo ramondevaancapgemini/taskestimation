@@ -1,14 +1,19 @@
 package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Developer;
-import nl.ramondevaan.taskestimation.model.view.developer.DeveloperAdd;
+import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service public class DeveloperService {
-    @Autowired private DeveloperRepository developerRepository;
+import javax.persistence.EntityNotFoundException;
+import java.time.Instant;
+
+@Service
+public class DeveloperService {
+    @Autowired
+    private DeveloperRepository developerRepository;
     private ModelMapper modelMapper;
 
     public DeveloperService() {
@@ -20,14 +25,20 @@ import org.springframework.stereotype.Service;
     }
 
     public Developer getDeveloper(long id) {
-        return developerRepository.findOne(id);
+        return developerRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Could not find developer with id %d",
+                                id
+                        )));
     }
 
-    public void addDeveloper(DeveloperAdd d) {
-        developerRepository.save(modelMapper.map(d, Developer.class));
+    public void addDeveloper(DeveloperEdit d) {
+        Developer dev = modelMapper.map(d, Developer.class);
+        dev.setCreated(Instant.now());
+        developerRepository.save(dev);
     }
 
     public void removeDeveloper(long id) {
-        developerRepository.delete(id);
+        developerRepository.deleteById(id);
     }
 }

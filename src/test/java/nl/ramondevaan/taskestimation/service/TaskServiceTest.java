@@ -9,22 +9,27 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class) @SpringBootTest public class TaskServiceTest {
-    @Mock private TaskRepository taskRepository;
-    @Mock private ModelMapper modelMapper;
+@RunWith(MockitoJUnitRunner.class)
+public class TaskServiceTest {
+    @Mock
+    private TaskRepository taskRepository;
+    @Mock
+    private ModelMapper modelMapper;
 
-    @InjectMocks private TaskService taskService;
+    @InjectMocks
+    private TaskService taskService;
 
-    @Test public void getAllTasks() {
+    @Test
+    public void getAllTasks() {
         List<Task> tasks = new ArrayList<>();
 
         final int numDev = 10;
@@ -38,15 +43,17 @@ import static org.mockito.Mockito.*;
         Assert.assertEquals(tasks, taskService.getAllTasks());
     }
 
-    @Test public void getTask() {
+    @Test
+    public void getTask() {
         Task d = mock(Task.class);
 
         final long id = 1;
-        when(taskRepository.findOne(id)).thenReturn(d);
+        when(taskRepository.findById(id)).thenReturn(Optional.of(d));
         Assert.assertEquals(d, taskService.getTask(id));
     }
 
-    @Test public void addTask() {
+    @Test
+    public void addTask() {
         TaskAdd da = mock(TaskAdd.class);
         Task    d  = mock(Task.class);
 
@@ -59,12 +66,13 @@ import static org.mockito.Mockito.*;
         Assert.assertEquals(d, captor.getValue());
     }
 
-    @Test public void removeTask() {
+    @Test
+    public void removeTask() {
         final long id = 1;
 
         taskService.removeTask(id);
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        verify(taskRepository, times(1)).delete(captor.capture());
+        verify(taskRepository, times(1)).deleteById(captor.capture());
 
         Assert.assertEquals(captor.getValue().longValue(), id);
     }
