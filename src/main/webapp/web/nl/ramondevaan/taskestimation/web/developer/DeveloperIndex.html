@@ -7,6 +7,7 @@
     <script src="vendor/jquery/jquery-3.2.1.min.js"
             crossorigin="anonymous"></script>
     <script src="vendor/semantic-ui/semantic.min.js"></script>
+    <script src="vendor/js/tablesort.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
 
     <meta charset="UTF-8">
@@ -14,7 +15,29 @@
 </head>
 <body>
 <wicket:panel>
+    <table id="developerTable" class="ui sortable selectable striped celled table">
+        <thead>
+        <tr>
+            <th>Given name<i class="sort icon"></i></th>
+            <th>Surname prefix</th>
+            <th>Surname</th>
+            <th>Email</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr wicket:id="rows">
+            <td wicket:id="dataRow"></td>
+        </tr>
+        </tbody>
+    </table>
+    <wicket:link>
 
+    </wicket:link>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#developerTable').tablesort();
+        });
+    </script>
 </wicket:panel>
 </body>
 </html>

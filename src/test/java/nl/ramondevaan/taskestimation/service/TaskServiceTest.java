@@ -1,7 +1,8 @@
 package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Task;
-import nl.ramondevaan.taskestimation.model.view.task.TaskAdd;
+import nl.ramondevaan.taskestimation.model.view.task.TaskEdit;
+import nl.ramondevaan.taskestimation.model.view.task.TaskView;
 import nl.ramondevaan.taskestimation.repository.TaskRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -30,32 +32,44 @@ public class TaskServiceTest {
 
     @Test
     public void getAllTasks() {
-        List<Task> tasks = new ArrayList<>();
+        List<Task>     tasks = new ArrayList<>();
+        List<TaskView> views = new ArrayList<>();
 
         final int numDev = 10;
 
         for (int i = 0; i < numDev; i++) {
-            tasks.add(mock(Task.class));
+            Task     t = mock(Task.class);
+            TaskView v = mock(TaskView.class);
+
+            tasks.add(t);
+            views.add(v);
+            when(modelMapper.map(t, TaskView.class)).thenReturn(v);
         }
 
         when(taskRepository.findAll()).thenReturn(tasks);
 
-        Assert.assertEquals(tasks, taskService.getAllTasks());
+        Assert.assertEquals(views,
+                taskService.getAllTasks().collect(Collectors.toList())
+        );
     }
 
     @Test
     public void getTask() {
-        Task d = mock(Task.class);
+        Task     d = mock(Task.class);
+        TaskView v = mock(TaskView.class);
 
         final long id = 1;
+
+        when(modelMapper.map(d, TaskView.class)).thenReturn(v);
         when(taskRepository.findById(id)).thenReturn(Optional.of(d));
-        Assert.assertEquals(d, taskService.getTask(id));
+
+        Assert.assertEquals(v, taskService.getTask(id));
     }
 
     @Test
     public void addTask() {
-        TaskAdd da = mock(TaskAdd.class);
-        Task    d  = mock(Task.class);
+        TaskEdit da = mock(TaskEdit.class);
+        Task     d  = mock(Task.class);
 
         when(modelMapper.map(da, Task.class)).thenReturn(d);
 

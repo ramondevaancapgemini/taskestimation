@@ -1,7 +1,8 @@
 package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Estimation;
-import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationAdd;
+import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationEdit;
+import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationView;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import nl.ramondevaan.taskestimation.repository.EstimationRepository;
 import nl.ramondevaan.taskestimation.repository.TaskRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class EstimationService {
@@ -27,19 +30,20 @@ public class EstimationService {
         modelMapper = new ModelMapper();
     }
 
-    public Iterable<Estimation> getAllEstimations() {
-        return estimationRepository.findAll();
+    public Stream<EstimationView> getAllEstimations() {
+        return StreamSupport
+                .stream(estimationRepository.findAll().spliterator(), false)
+                .map(e -> modelMapper.map(e, EstimationView.class));
     }
 
-    public Estimation getEstimation(long id) {
-        return estimationRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(
-                        String.format("Could not find estimation with id %d",
-                                id
-                        )));
+    public EstimationView getEstimation(long id) {
+        return estimationRepository.findById(id)
+                .map(e -> modelMapper.map(e, EstimationView.class)).orElseThrow(
+                        () -> new EntityNotFoundException(String.format(
+                                "Could not find estimation with id %d", id)));
     }
 
-    public void addEstimation(EstimationAdd e) {
+    public void addEstimation(EstimationEdit e) {
         Estimation t = modelMapper.map(e, Estimation.class);
 
         t.setDeveloper(developerRepository.findById(e.getDeveloperId())

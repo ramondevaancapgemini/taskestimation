@@ -3,7 +3,8 @@ package nl.ramondevaan.taskestimation.service;
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.domain.Estimation;
 import nl.ramondevaan.taskestimation.model.domain.Task;
-import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationAdd;
+import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationEdit;
+import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationView;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import nl.ramondevaan.taskestimation.repository.EstimationRepository;
 import nl.ramondevaan.taskestimation.repository.TaskRepository;
@@ -19,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -40,25 +42,36 @@ public class EstimationServiceTest {
     public void getAllEstimations() {
         final int numEst = 10;
 
-        List<Estimation> estimations = new ArrayList<>();
+        List<Estimation>     estimations = new ArrayList<>();
+        List<EstimationView> views       = new ArrayList<>();
 
         for (int i = 0; i < numEst; i++) {
-            estimations.add(mock(Estimation.class));
+            Estimation     e = mock(Estimation.class);
+            EstimationView v = mock(EstimationView.class);
+
+            estimations.add(e);
+            views.add(v);
+
+            when(modelMapper.map(e, EstimationView.class)).thenReturn(v);
         }
 
         when(estimationRepository.findAll()).thenReturn(estimations);
 
-        Assert.assertEquals(estimationService.getAllEstimations(), estimations);
+        Assert.assertEquals(views, estimationService.getAllEstimations()
+                .collect(Collectors.toList()));
     }
 
     @Test
     public void getEstimation() {
-        Estimation e = mock(Estimation.class);
+        Estimation     e = mock(Estimation.class);
+        EstimationView v = mock(EstimationView.class);
 
         final long id = 1;
 
+        when(modelMapper.map(e, EstimationView.class)).thenReturn(v);
         when(estimationRepository.findById(id)).thenReturn(Optional.of(e));
-        Assert.assertEquals(estimationService.getEstimation(id), e);
+
+        Assert.assertEquals(estimationService.getEstimation(id), v);
     }
 
     @Test
@@ -66,10 +79,10 @@ public class EstimationServiceTest {
         final long developerId = 1;
         final long taskId      = 5;
 
-        Developer     d   = mock(Developer.class);
-        Task          t   = mock(Task.class);
-        Estimation    e   = mock(Estimation.class);
-        EstimationAdd add = mock(EstimationAdd.class);
+        Developer      d   = mock(Developer.class);
+        Task           t   = mock(Task.class);
+        Estimation     e   = mock(Estimation.class);
+        EstimationEdit add = mock(EstimationEdit.class);
 
         ArgumentCaptor<Long> taskCaptor = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<Long> developerCaptor = ArgumentCaptor

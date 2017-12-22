@@ -2,6 +2,7 @@ package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
+import nl.ramondevaan.taskestimation.model.view.developer.DeveloperView;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class DeveloperService {
@@ -20,16 +23,17 @@ public class DeveloperService {
         modelMapper = new ModelMapper();
     }
 
-    public Iterable<Developer> getAllDevelopers() {
-        return developerRepository.findAll();
+    public Stream<DeveloperView> getAllDevelopers() {
+        return StreamSupport
+                .stream(developerRepository.findAll().spliterator(), false)
+                .map(d -> modelMapper.map(d, DeveloperView.class));
     }
 
-    public Developer getDeveloper(long id) {
-        return developerRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(
-                        String.format("Could not find developer with id %d",
-                                id
-                        )));
+    public DeveloperView getDeveloper(long id) {
+        return developerRepository.findById(id)
+                .map(d -> modelMapper.map(d, DeveloperView.class)).orElseThrow(
+                        () -> new EntityNotFoundException(String.format(
+                                "Could not find developer with id %d", id)));
     }
 
     public void addDeveloper(DeveloperEdit d) {

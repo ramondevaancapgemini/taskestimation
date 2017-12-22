@@ -2,6 +2,7 @@ package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
+import nl.ramondevaan.taskestimation.model.view.developer.DeveloperView;
 import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -31,25 +33,36 @@ public class DeveloperServiceTest {
     @Test
     public void getAllDevelopers() {
         List<Developer> developers = new ArrayList<>();
+        List<DeveloperView> views = new ArrayList<>();
 
         final int numDev = 10;
 
         for (int i = 0; i < numDev; i++) {
-            developers.add(mock(Developer.class));
+            Developer dev = mock(Developer.class);
+            DeveloperView view = mock(DeveloperView.class);
+            developers.add(dev);
+            views.add(view);
+            when(modelMapper.map(dev, DeveloperView.class)).thenReturn(view);
         }
 
         when(developerRepository.findAll()).thenReturn(developers);
 
-        Assert.assertEquals(developers, developerService.getAllDevelopers());
+        Assert.assertEquals(views,
+                developerService.getAllDevelopers().collect(Collectors.toList())
+        );
     }
 
     @Test
     public void getDeveloper() {
         Developer d = mock(Developer.class);
+        DeveloperView v = mock(DeveloperView.class);
 
         final long id = 1;
+
+        when(modelMapper.map(d, DeveloperView.class)).thenReturn(v);
         when(developerRepository.findById(id)).thenReturn(Optional.of(d));
-        Assert.assertEquals(d, developerService.getDeveloper(id));
+
+        Assert.assertEquals(v, developerService.getDeveloper(id));
     }
 
     @Test
