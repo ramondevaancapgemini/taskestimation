@@ -1,13 +1,7 @@
 package nl.ramondevaan.taskestimation.service;
 
-import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.domain.Estimation;
-import nl.ramondevaan.taskestimation.model.domain.Task;
-import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationEdit;
-import nl.ramondevaan.taskestimation.model.view.Estimation.EstimationView;
-import nl.ramondevaan.taskestimation.repository.DeveloperRepository;
 import nl.ramondevaan.taskestimation.repository.EstimationRepository;
-import nl.ramondevaan.taskestimation.repository.TaskRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +9,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +21,6 @@ import static org.mockito.Mockito.*;
 public class EstimationServiceTest {
     @Mock
     private EstimationRepository estimationRepository;
-    @Mock
-    private TaskRepository taskRepository;
-    @Mock
-    private DeveloperRepository developerRepository;
-    @Mock
-    private ModelMapper modelMapper;
 
     @InjectMocks
     private EstimationService estimationService;
@@ -42,72 +29,43 @@ public class EstimationServiceTest {
     public void getAllEstimations() {
         final int numEst = 10;
 
-        List<Estimation>     estimations = new ArrayList<>();
-        List<EstimationView> views       = new ArrayList<>();
+        List<Estimation> estimations = new ArrayList<>();
 
         for (int i = 0; i < numEst; i++) {
-            Estimation     e = mock(Estimation.class);
-            EstimationView v = mock(EstimationView.class);
+            Estimation e = mock(Estimation.class);
 
             estimations.add(e);
-            views.add(v);
-
-            when(modelMapper.map(e, EstimationView.class)).thenReturn(v);
         }
 
         when(estimationRepository.findAll()).thenReturn(estimations);
 
-        Assert.assertEquals(views, estimationService.getAllEstimations()
-                .collect(Collectors.toList()));
+        Assert.assertEquals(estimations, estimationService.getAllEstimations()
+                                                          .collect(Collectors.toList()));
     }
 
     @Test
     public void getEstimation() {
-        Estimation     e = mock(Estimation.class);
-        EstimationView v = mock(EstimationView.class);
+        Estimation e = mock(Estimation.class);
 
         final long id = 1;
 
-        when(modelMapper.map(e, EstimationView.class)).thenReturn(v);
         when(estimationRepository.findById(id)).thenReturn(Optional.of(e));
 
-        Assert.assertEquals(estimationService.getEstimation(id), v);
+        Assert.assertEquals(estimationService.getEstimation(id), e);
     }
 
     @Test
     public void addEstimation() {
-        final long developerId = 1;
-        final long taskId      = 5;
+        Estimation e = mock(Estimation.class);
 
-        Developer      d   = mock(Developer.class);
-        Task           t   = mock(Task.class);
-        Estimation     e   = mock(Estimation.class);
-        EstimationEdit add = mock(EstimationEdit.class);
-
-        ArgumentCaptor<Long> taskCaptor = ArgumentCaptor.forClass(Long.class);
-        ArgumentCaptor<Long> developerCaptor = ArgumentCaptor
-                .forClass(Long.class);
         ArgumentCaptor<Estimation> captor = ArgumentCaptor
                 .forClass(Estimation.class);
 
-        when(add.getDeveloperId()).thenReturn(developerId);
-        when(add.getTaskId()).thenReturn(taskId);
-        when(developerRepository.findById(developerId))
-                .thenReturn(Optional.of(d));
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(t));
-        when(modelMapper.map(add, Estimation.class)).thenReturn(e);
-        estimationService.addEstimation(add);
+        estimationService.addEstimation(e);
 
         verify(estimationRepository, times(1)).save(captor.capture());
-        verify(taskRepository, times(1)).findById(taskCaptor.capture());
-        verify(developerRepository, times(1))
-                .findById(developerCaptor.capture());
 
         Assert.assertEquals(captor.getValue(), e);
-        Assert.assertEquals(taskCaptor.getValue().longValue(), taskId);
-        Assert.assertEquals(developerCaptor.getValue().longValue(),
-                developerId
-        );
     }
 
     @Test

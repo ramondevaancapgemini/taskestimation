@@ -1,6 +1,6 @@
 package nl.ramondevaan.taskestimation;
 
-import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
+import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.service.DeveloperService;
 import nl.ramondevaan.taskestimation.service.EstimationService;
 import nl.ramondevaan.taskestimation.service.TaskService;
@@ -16,9 +16,9 @@ import java.util.List;
 @Profile("dev")
 public class Seeder implements InitializingBean {
     @Autowired
-    private DeveloperService developerService;
+    private DeveloperService  developerService;
     @Autowired
-    private TaskService taskService;
+    private TaskService       taskService;
     @Autowired
     private EstimationService estimationService;
 
@@ -33,33 +33,50 @@ public class Seeder implements InitializingBean {
     }
 
     private void initializeDevelopers() {
-        List<DeveloperEdit> developers =  Arrays.asList(new DeveloperEdit() {{
-            setGivenName("Ramon");
-            setSurnamePrefix("de");
-            setSurname("Vaan");
-            setEmail("ramon.de.vaan@capgemini.com");
-        }}, new DeveloperEdit() {{
-            setGivenName("Wilbert");
-            setSurnamePrefix("de");
-            setSurname("Bever");
-            setEmail("wilbert.de.bever@genericemail.com");
-        }}, new DeveloperEdit() {{
-            setGivenName("Hans");
-            setSurnamePrefix("");
-            setSurname("Peperkamp");
-            setEmail("hans.peperkamp@genericemail.com");
-        }}, new DeveloperEdit() {{
-            setGivenName("Annie");
-            setSurnamePrefix("van");
-            setSurname("Wateren");
-            setEmail("a.van.wateren@genericemail.com");
-        }}, new DeveloperEdit() {{
-            setGivenName("Suzanne");
-            setSurnamePrefix("");
-            setSurname("Schmidt");
-            setEmail("suzanna.schmidt@genericemail.com");
-        }});
+        List<Developer> developers = Arrays.asList(
+                newDeveloper("Ramon", "de", "Vaan", "ramon.de.vaan@capgemini.com"),
+                newDeveloper(
+                        "Wilbert",
+                        "de",
+                        "Bever",
+                        "wilbert.de.bever@genericemail.com"
+                ),
+                newDeveloper(
+                        "Hans",
+                        "",
+                        "Peperkamp",
+                        "hans.peperkamp@genericemail.com"
+                ),
+                newDeveloper(
+                        "Annie",
+                        "van",
+                        "Wateren",
+                        "a.van.wateren@genericemail.com"
+                ),
+                newDeveloper(
+                        "Suzanne",
+                        "",
+                        "Schmidt",
+                        "suzanne.schmidt@genericemail.com"
+                )
+        );
 
         developers.forEach(d -> developerService.addDeveloper(d));
+    }
+
+    private Developer newDeveloper(
+            String givenName,
+            String surnamePrefix,
+            String surname,
+            String email
+    ) {
+        Developer d = new Developer();
+
+        d.setGivenName(givenName);
+        d.setSurnamePrefix(surnamePrefix);
+        d.setSurname(surname);
+        d.setEmail(email);
+
+        return d;
     }
 }

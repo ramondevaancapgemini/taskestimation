@@ -2,26 +2,38 @@
 <html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <title>Developer overview</title>
+
     <link rel="stylesheet" type="text/css"
           href="vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <script src="vendor/jquery/jquery-3.2.1.min.js"
             crossorigin="anonymous"></script>
     <script src="vendor/semantic-ui/semantic.min.js"></script>
-    <script src="vendor/js/tablesort.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script>
+        $(document).ready(function() {
+            $('.ui.selection.dropdown').dropdown();
+            $('.ui.menu .ui.dropdown').dropdown({
+                on: 'hover'
+            });
+            $(".goto").click(function() {
+                window.location = $(this).find("a").attr("href");
+                return false;
+            });
+        });
 
-    <meta charset="UTF-8">
-    <title>Developer overview</title>
+    </script>
 </head>
 <body>
 <wicket:panel>
-    <table id="developerTable" class="ui sortable selectable striped celled table">
+    <table id="developerTable"
+           class="ui sortable selectable striped celled table">
         <thead>
         <tr>
-            <th>Given name</th>
-            <th>Surname prefix</th>
-            <th>Surname</th>
-            <th>Email</th>
+            <th wicket:id="orderByGivenName">Given name</th>
+            <th wicket:id="orderBySurnamePrefix">Surname prefix</th>
+            <th wicket:id="orderBySurname">Surname</th>
+            <th wicket:id="orderByEmail">Email</th>
         </tr>
         </thead>
         <tbody>
@@ -29,15 +41,29 @@
             <td wicket:id="dataRow"></td>
         </tr>
         </tbody>
+        <tfoot>
+        <!--<tr>-->
+        <!--<th wicket:id="numEntries" colspan="4">-->
+        <!--&lt;!&ndash;<select wicket:id="entriesPerPage" class="ui selection dropdown">&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;<option value="">Entries per page</option>&ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;<option value="0">5</option>&ndash;&gt;-->
+        <!--&lt;!&ndash;<option value="1">10</option>&ndash;&gt;-->
+        <!--&lt;!&ndash;<option value="2">25</option>&ndash;&gt;-->
+        <!--&lt;!&ndash;</select>&ndash;&gt;-->
+        <!--</th>-->
+        <!--</tr>-->
+        <tr>
+            <th colspan="4">
+                <div class="ui grid">
+                    <div class="two column row">
+                        <div wicket:id="numEntries" class="column left floated left aligned"></div>
+                        <div wicket:id="navigator" class="column right floated right aligned bottom aligned"></div>
+                    </div>
+                </div>
+            </th>
+        </tr>
+        </tfoot>
     </table>
-    <wicket:link>
-
-    </wicket:link>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#developerTable').tablesort();
-        });
-    </script>
 </wicket:panel>
 </body>
 </html>

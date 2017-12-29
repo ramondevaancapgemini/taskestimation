@@ -1,6 +1,6 @@
 package nl.ramondevaan.taskestimation.web.developer;
 
-import nl.ramondevaan.taskestimation.model.view.developer.DeveloperEdit;
+import nl.ramondevaan.taskestimation.model.db.developer.DeveloperEdit;
 import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -21,7 +21,8 @@ public class DeveloperAddForm extends Form {
         add(new TextField<String>("surname"));
     }
 
-    @Override protected void onSubmit() {
+    @Override
+    protected void onSubmit() {
         System.out.println("USER PRESSED SUBMIT");
         System.out.println(developerAdd.toString());
     }

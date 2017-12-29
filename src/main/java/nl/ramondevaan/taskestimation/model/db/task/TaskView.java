@@ -1,9 +1,9 @@
-package nl.ramondevaan.taskestimation.model.view.task;
+package nl.ramondevaan.taskestimation.model.db.task;
 
 import lombok.Data;
 
 @Data
-public class TaskEdit {
+public class TaskView {
     private String name;
     private String description;
 }

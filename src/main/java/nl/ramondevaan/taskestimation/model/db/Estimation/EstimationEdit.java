@@ -1,4 +1,4 @@
-package nl.ramondevaan.taskestimation.model.view.Estimation;
+package nl.ramondevaan.taskestimation.model.db.Estimation;
 
 import lombok.Data;
 

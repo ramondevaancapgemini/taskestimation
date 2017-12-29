@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode(of = { "id" })
 @ToString(exclude = { "estimations" })
-public class Developer {
+public class Developer implements Serializable {
+    public final static long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private Long id;

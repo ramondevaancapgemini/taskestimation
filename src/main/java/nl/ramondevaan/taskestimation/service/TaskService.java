@@ -1,11 +1,10 @@
 package nl.ramondevaan.taskestimation.service;
 
 import nl.ramondevaan.taskestimation.model.domain.Task;
-import nl.ramondevaan.taskestimation.model.view.task.TaskEdit;
-import nl.ramondevaan.taskestimation.model.view.task.TaskView;
 import nl.ramondevaan.taskestimation.repository.TaskRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -17,31 +16,35 @@ import java.util.stream.StreamSupport;
 public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
-    private ModelMapper modelMapper;
 
     public TaskService() {
-        modelMapper = new ModelMapper();
+
     }
 
-    public Stream<TaskView> getAllTasks() {
-        return StreamSupport
-                .stream(taskRepository.findAll().spliterator(), false)
-                .map(t -> modelMapper.map(t, TaskView.class));
+    public Stream<Task> getAllTasks() {
+        return taskRepository.findAll().stream();
     }
 
-    public TaskView getTask(long id) {
-        return taskRepository.findById(id)
-                .map(t -> modelMapper.map(t, TaskView.class)).orElseThrow(
-                        () -> new EntityNotFoundException(
-                                String.format("Could not find task with id %d",
-                                        id
-                                )));
+    public Page<Task> getTasks(Pageable p) {
+        return taskRepository.findAll(p);
     }
 
-    public void addTask(TaskEdit d) {
-        Task task = modelMapper.map(d, Task.class);
-        task.setCreated(Instant.now());
-        taskRepository.save(task);
+    public Task getTask(long id) {
+        return taskRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(
+                        "Could not find task with id %d",
+                        id
+                )));
+    }
+
+    public long count() {
+        return taskRepository.count();
+    }
+
+    public void addTask(Task d) {
+        d.setCreated(Instant.now());
+        taskRepository.save(d);
     }
 
     public void removeTask(long id) {

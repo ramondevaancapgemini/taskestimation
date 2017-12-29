@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="vendor/jquery/jquery-3.2.1.min.js"
+            crossorigin="anonymous"></script>
+    <script src="vendor/semantic-ui/semantic.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.ui.selection.dropdown').dropdown();
+            $('.ui.menu .ui.dropdown').dropdown({
+                on: 'hover'
+            });
+            $(".goto").click(function() {
+                window.location = $(this).find("a").attr("href");
+                return false;
+            });
+        });
+  </script>
+</head>
+<body>
+<wicket:panel>
+    <div class="ui sub header">Entries per page</div>
+    <div class="ui selection dropdown">
+        <input wicket:id="numberOfEntriesValue" name="numberOfEntriesValue" type="hidden" value="default">
+        <div class="default text">Select a value</div>
+        <i class="dropdown icon"></i>
+        <div class="menu">
+            <a wicket:id="numberOfEntries" class="item">
+                <span wicket:id="value"></span>
+            </a>
+        </div>
+    </div>
+</wicket:panel>
+</body>
+</html>

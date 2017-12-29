@@ -1,56 +1,85 @@
 package nl.ramondevaan.taskestimation.web.developer;
 
-import nl.ramondevaan.taskestimation.model.view.developer.DeveloperView;
+import nl.ramondevaan.taskestimation.model.domain.Developer;
+import nl.ramondevaan.taskestimation.provider.SortableDeveloperDataProvider;
 import nl.ramondevaan.taskestimation.service.DeveloperService;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
+import nl.ramondevaan.taskestimation.utility.OrderBy;
+import nl.ramondevaan.taskestimation.web.extension.SemanticNumEntriesPicker;
+import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.HiddenField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.markup.repeater.data.ListDataProvider;
+import org.apache.wicket.model.PropertyModel;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 public class DeveloperIndex extends Panel {
     @Inject
-    private DeveloperService developerService;
+    private DeveloperService service;
 
     public DeveloperIndex(String id) {
         super(id);
 
-        List<DeveloperView> developers = developerService.getAllDevelopers()
-                .collect(Collectors.toList());
-
-        ListDataProvider<DeveloperView> listDataProvider = new ListDataProvider<>(
-                developers);
-        DataView<DeveloperView> dataView = new DataView<DeveloperView>("rows",
-                listDataProvider
-        ) {
+        SortableDeveloperDataProvider dp = new SortableDeveloperDataProvider(service);
+        DataView<Developer> dataView = new DataView<Developer>("rows", dp) {
             @Override
-            protected void populateItem(Item<DeveloperView> item
-            ) {
-                DeveloperView view          = item.getModelObject();
+            protected void populateItem(Item<Developer> item) {
+                Developer     view          = item.getModelObject();
                 RepeatingView repeatingView = new RepeatingView("dataRow");
-                repeatingView.add(new Label(repeatingView.newChildId(),
+                repeatingView.add(new Label(
+                        repeatingView.newChildId(),
                         view.getGivenName()
                 ));
-                repeatingView.add(new Label(repeatingView.newChildId(),
+                repeatingView.add(new Label(
+                        repeatingView.newChildId(),
                         view.getSurnamePrefix()
                 ));
-                repeatingView.add(new Label(repeatingView.newChildId(),
+                repeatingView.add(new Label(
+                        repeatingView.newChildId(),
                         view.getSurname()
                 ));
-                repeatingView.add(new Label(repeatingView.newChildId(),
+                repeatingView.add(new Label(
+                        repeatingView.newChildId(),
                         view.getEmail()
                 ));
                 item.add(repeatingView);
             }
         };
 
+        add(new OrderBy(
+                "orderByGivenName",
+                "givenName",
+                dp,
+                () -> dataView.setCurrentPage(0)
+        ));
+        add(new OrderBy(
+                "orderBySurnamePrefix",
+                "surnamePrefix",
+                dp,
+                () -> dataView.setCurrentPage(0)
+        ));
+        add(new OrderBy(
+                "orderBySurname",
+                "surname",
+                dp,
+                () -> dataView.setCurrentPage(0)
+        ));
+        add(new OrderBy(
+                "orderByEmail",
+                "email",
+                dp,
+                () -> dataView.setCurrentPage(0)
+        ));
+
         add(dataView);
+
+        add(new SemanticPagingNavigator("navigator", dataView));
+        add(new SemanticNumEntriesPicker("numEntries", dataView));
     }
 }

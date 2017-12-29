@@ -2,16 +2,26 @@
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
     <meta charset="UTF-8">
+    <title>Test</title>
+
     <link rel="stylesheet" type="text/css"
           href="vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <script src="vendor/jquery/jquery-3.2.1.min.js"
             crossorigin="anonymous"></script>
     <script src="vendor/semantic-ui/semantic.min.js"></script>
-    <script src="vendor/js/tablesort.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-
-    <meta charset="UTF-8">
-    <title>Test</title>
+    <script>
+        $(document).ready(function() {
+            $('.ui.selection.dropdown').dropdown();
+            $('.ui.menu .ui.dropdown').dropdown({
+                on: 'hover'
+            });
+            $(".goto").click(function() {
+                window.location = $(this).find("a").attr("href");
+                return false;
+            });
+        });
+  </script>
 </head>
 <body>
 <div class="ui fixed inverted menu">

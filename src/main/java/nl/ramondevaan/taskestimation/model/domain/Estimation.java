@@ -7,12 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.io.Serializable;
 import java.time.Instant;
 
 @Data
 @Entity
 @EqualsAndHashCode(of = { "id" })
-public class Estimation {
+public class Estimation implements Serializable {
+    public final static long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private Long id;
