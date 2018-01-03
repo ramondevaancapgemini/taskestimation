@@ -11,6 +11,9 @@ import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @Entity
@@ -29,6 +32,13 @@ public class Developer implements Serializable {
     private String surnamePrefix;
     private String surname;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, mappedBy = "developer")
     private List<Estimation> estimations;
+
+    public String getFullName() {
+        return Stream
+                .of(getGivenName(), getSurnamePrefix(), getSurname())
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("  "));
+    }
 }

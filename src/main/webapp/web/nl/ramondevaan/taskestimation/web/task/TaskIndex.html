@@ -2,7 +2,7 @@
 <html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Developer overview</title>
+    <title>Task overview</title>
 
     <link rel="stylesheet" type="text/css"
           href="vendor/semantic-ui/semantic.min.css">
@@ -14,14 +14,12 @@
 </head>
 <body>
 <wicket:panel>
-    <table id="developerTable"
+    <table id="taskTable"
            class="ui sortable selectable striped celled table">
         <thead>
         <tr>
-            <th wicket:id="orderByGivenName">Given name</th>
-            <th wicket:id="orderBySurnamePrefix">Surname prefix</th>
-            <th wicket:id="orderBySurname">Surname</th>
-            <th wicket:id="orderByEmail">Email</th>
+            <th wicket:id="orderByName">Name</th>
+            <th wicket:id="orderByDescription">Description</th>
         </tr>
         </thead>
         <tbody>
@@ -31,7 +29,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <th colspan="4">
+            <th colspan="2">
                 <div class="ui grid">
                     <div class="two column row">
                         <div wicket:id="numEntries" class="column left floated left aligned"></div>

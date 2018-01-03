@@ -1,7 +1,6 @@
 package nl.ramondevaan.taskestimation;
 
 import nl.ramondevaan.taskestimation.web.HomePage;
-import nl.ramondevaan.taskestimation.web.developer.DeveloperAdd;
 import org.apache.wicket.Page;
 import org.apache.wicket.core.util.file.WebApplicationPath;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -18,7 +17,8 @@ public class WicketApplication extends WebApplication {
     protected void init() {
         super.init();
 
-        getResourceSettings().getResourceFinders()
+        getResourceSettings()
+                .getResourceFinders()
                 .add(new WebApplicationPath(getServletContext(), "web"));
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Add task</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="vendor/jquery/jquery-3.2.1.min.js"
+            crossorigin="anonymous"></script>
+    <script src="vendor/semantic-ui/semantic.min.js"></script>
+    <script src="/js/Dropdown.js"></script>
+</head>
+<body>
+<wicket:panel>
+    <div class="ui form segment">
+        <form wicket:id="taskEdit">
+            <div class="field">
+                <label>Name</label>
+                <div class="ui left labeled left icon input">
+                    <input wicket:id="name" type="text" placeholder="Name">
+                    <i class="tag icon"></i>
+                    <div class="ui corner label">
+                        <i class="icon asterisk"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <div class="ui left labeled left icon input">
+                    <textarea wicket:id="description" rows="2" placeholder="Description">
+                    </textarea>
+                    <div class="ui corner label">
+                        <i class="icon asterisk"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="ui error message">
+                <div class="header">We noticed some issues</div>
+            </div>
+            <input type="submit" class="ui primary button" value="Add">
+        </form>
+    </div>
+</wicket:panel>
+</body>
+</html>

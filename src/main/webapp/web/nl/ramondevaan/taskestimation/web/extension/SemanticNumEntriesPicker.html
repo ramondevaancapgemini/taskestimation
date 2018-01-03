@@ -10,18 +10,7 @@
     <script src="vendor/jquery/jquery-3.2.1.min.js"
             crossorigin="anonymous"></script>
     <script src="vendor/semantic-ui/semantic.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.ui.selection.dropdown').dropdown();
-            $('.ui.menu .ui.dropdown').dropdown({
-                on: 'hover'
-            });
-            $(".goto").click(function() {
-                window.location = $(this).find("a").attr("href");
-                return false;
-            });
-        });
-  </script>
+    <script src="/js/Dropdown.js"></script>
 </head>
 <body>
 <wicket:panel>

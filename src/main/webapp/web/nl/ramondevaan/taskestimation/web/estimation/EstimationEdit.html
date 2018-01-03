@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit estimation</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="vendor/semantic-ui/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="vendor/jquery/jquery-3.2.1.min.js"
+            crossorigin="anonymous"></script>
+    <script src="vendor/semantic-ui/semantic.min.js"></script>
+    <script src="/js/Dropdown.js"></script>
+</head>
+<body>
+<wicket:panel>
+    <div class="ui form segment">
+        <form wicket:id="estimationEdit">
+            <div class="field">
+                <label>Developer</label>
+                <select wicket:id="developer" class="ui fluid dropdown disabled" disabled="disabled">
+
+                </select>
+            </div>
+            <div class="field">
+                <label>Task</label>
+                <select wicket:id="task" class="ui fluid dropdown disabled" disabled="disabled">
+
+                </select>
+            </div>
+            <div class="field">
+                <label>Value</label>
+                <div class="ui left labeled left icon input">
+                    <input wicket:id="value" type="number" placeholder="Value in story points" min="1">
+                    <i class="hourglass empty icon"></i>
+                </div>
+            </div>
+            <div class="ui error message">
+                <div class="header">We noticed some issues</div>
+            </div>
+            <input type="submit" class="ui primary button" value="Add">
+        </form>
+    </div>
+</wicket:panel>
+</body>
+</html>

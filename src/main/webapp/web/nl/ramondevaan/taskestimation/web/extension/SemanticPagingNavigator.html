@@ -10,30 +10,21 @@
     <script src="vendor/jquery/jquery-3.2.1.min.js"
             crossorigin="anonymous"></script>
     <script src="vendor/semantic-ui/semantic.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.ui.selection.dropdown').dropdown();
-            $('.ui.menu .ui.dropdown').dropdown({
-                on: 'hover'
-            });
-            $(".goto").click(function() {
-                window.location = $(this).find("a").attr("href");
-                return false;
-            });
-        });
-  </script>
+    <script src="/js/Dropdown.js"></script>
 </head>
 <body>
-<wicket:panel class="ui link pagination menu">
-    <a wicket:id="first" class="first icon item"><i class="angle double left icon"></i></a>
-    <a wicket:id="prev" rel="prev" class="prev icon item"><i class="angle left icon"></i></a>
-    <div wicket:id="navigation" class="goto item">
-        <a wicket:id="pageLink" href="#">
-            <span wicket:id="pageNumber"></span>
-        </a>
+<wicket:panel>
+    <div class="ui link pagination menu">
+        <a wicket:id="first" class="first icon item"><i class="angle double left icon"></i></a>
+        <a wicket:id="prev" rel="prev" class="prev icon item"><i class="angle left icon"></i></a>
+        <wicket:container wicket:id="navigation">
+            <a wicket:id="pageLink" href="#" class="item">
+                <span wicket:id="pageNumber"></span>
+            </a>
+        </wicket:container>
+        <a wicket:id="next" rel="next" class="next icon item"><i class="angle right icon"></i></a>
+        <a wicket:id="last" class="last icon item"><i class="angle double right icon"></i></a>
     </div>
-    <a wicket:id="next" rel="next" class="next icon item"><i class="angle right icon"></i></a>
-    <a wicket:id="last" class="last icon item"><i class="angle double right icon"></i></a>
 </wicket:panel>
 </body>
 </html>

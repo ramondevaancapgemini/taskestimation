@@ -2,7 +2,7 @@
 <html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Developer overview</title>
+    <title>Estimation overview</title>
 
     <link rel="stylesheet" type="text/css"
           href="vendor/semantic-ui/semantic.min.css">
@@ -14,24 +14,22 @@
 </head>
 <body>
 <wicket:panel>
-    <table id="developerTable"
+    <table id="estimationTable"
            class="ui sortable selectable striped celled table">
         <thead>
         <tr>
-            <th wicket:id="orderByGivenName">Given name</th>
-            <th wicket:id="orderBySurnamePrefix">Surname prefix</th>
-            <th wicket:id="orderBySurname">Surname</th>
-            <th wicket:id="orderByEmail">Email</th>
+            <th wicket:id="orderByTaskName" class="center aligned">Task</th>
+            <th wicket:id="headerRow" class="center aligned"></th>
         </tr>
         </thead>
         <tbody>
         <tr wicket:id="rows">
-            <td wicket:id="dataRow"></td>
+            <td wicket:id="dataRow" class="center aligned"></td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-            <th colspan="4">
+            <th wicket:id="footer">
                 <div class="ui grid">
                     <div class="two column row">
                         <div wicket:id="numEntries" class="column left floated left aligned"></div>
