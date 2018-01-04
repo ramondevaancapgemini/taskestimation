@@ -71,9 +71,9 @@ public class EstimationIndex extends Panel {
                 ValueGetter g;
                 if (developers.stream()
                               .allMatch(view.getEstimations()::containsKey)) {
-                    g = i -> i == null ? " " : String.valueOf(i);
+                    g = i -> i == null ? "N\\A" : String.valueOf(i);
                 } else {
-                    g = i -> i == null ? " " : "X";
+                    g = i -> i == null ? "N\\A" : "X";
                 }
 
                 for (Developer d : developers) {
