@@ -24,7 +24,12 @@
         </thead>
         <tbody>
         <tr wicket:id="rows">
-            <td wicket:id="dataRow" class="center aligned"></td>
+            <td><span wicket:id="taskName"></span></td>
+            <td wicket:id="dataRow" class="center aligned selectable">
+                <a wicket:id="editLink">
+                    <span wicket:id="value"></span>
+                </a>
+            </td>
         </tr>
         </tbody>
         <tfoot>

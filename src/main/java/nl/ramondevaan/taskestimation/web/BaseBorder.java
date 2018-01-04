@@ -15,6 +15,7 @@ public class BaseBorder extends Border {
     public BaseBorder(String id) {
         super(id);
 
+        addLink("homePage", HomePage.class);
         addLink("developerIndexPage", DeveloperIndexPage.class);
         addLink("developerAddPage", DeveloperAddPage.class);
         addLink("taskIndexPage", TaskIndexPage.class);

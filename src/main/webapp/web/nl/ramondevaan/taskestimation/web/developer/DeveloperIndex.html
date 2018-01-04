@@ -22,16 +22,26 @@
             <th wicket:id="orderBySurnamePrefix">Surname prefix</th>
             <th wicket:id="orderBySurname">Surname</th>
             <th wicket:id="orderByEmail">Email</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr wicket:id="rows">
-            <td wicket:id="dataRow"></td>
+            <td wicket:id="dataRow" class="selectable">
+                <a wicket:id="cellLink">
+                    <span wicket:id="cellValue"></span>
+                </a>
+            </td>
+            <td class="center aligned">
+                <a wicket:id="deleteAction">
+                    <i class="red remove icon"></i>
+                </a>
+            </td>
         </tr>
         </tbody>
         <tfoot>
         <tr>
-            <th colspan="4">
+            <th colspan="5">
                 <div class="ui grid">
                     <div class="two column row">
                         <div wicket:id="numEntries" class="column left floated left aligned"></div>

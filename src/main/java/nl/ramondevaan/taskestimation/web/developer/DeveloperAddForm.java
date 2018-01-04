@@ -12,13 +12,17 @@ import javax.inject.Inject;
 public class DeveloperAddForm extends Form {
     @Inject
     private DeveloperService service;
-    private Developer        developerAdd;
+    private Developer        developer;
 
     public DeveloperAddForm(String id) {
+        this(id, new Developer());
+    }
+
+    public DeveloperAddForm(String id, Developer developer) {
         super(id);
 
-        developerAdd = new Developer();
-        setDefaultModel(new CompoundPropertyModel<>(developerAdd));
+        this.developer = developer;
+        setDefaultModel(new CompoundPropertyModel<>(this.developer));
 
         add(new EmailTextField("email"));
         add(new TextField<String>("givenName"));
@@ -28,8 +32,7 @@ public class DeveloperAddForm extends Form {
 
     @Override
     protected void onSubmit() {
-        System.out.println("USER PRESSED SUBMIT");
-        System.out.println(developerAdd.toString());
-        service.addDeveloper(developerAdd);
+        service.addDeveloper(developer);
+        setResponsePage(new DeveloperIndexPage());
     }
 }

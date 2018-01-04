@@ -2,7 +2,7 @@
 <html lang="en" xmlns:wicket="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Edit estimation</title>
+    <title>Edit task</title>
 
     <link rel="stylesheet" type="text/css"
           href="vendor/semantic-ui/semantic.min.css">
@@ -15,30 +15,31 @@
 <body>
 <wicket:panel>
     <div class="ui form segment">
-        <form wicket:id="estimationEdit">
+        <form wicket:id="taskEdit">
             <div class="field">
-                <label>Developer</label>
-                <select wicket:id="developer" class="ui fluid dropdown disabled">
-
-                </select>
-            </div>
-            <div class="field">
-                <label>Task</label>
-                <select wicket:id="task" class="ui fluid dropdown disabled">
-
-                </select>
-            </div>
-            <div class="field">
-                <label>Value</label>
+                <label>Name</label>
                 <div class="ui left labeled left icon input">
-                    <input wicket:id="value" type="number" placeholder="Value in story points" min="1">
-                    <i class="hourglass empty icon"></i>
+                    <input wicket:id="name" type="text" placeholder="Name">
+                    <i class="tag icon"></i>
+                    <div class="ui corner label">
+                        <i class="icon asterisk"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <div class="ui left labeled left icon input">
+                    <textarea wicket:id="description" rows="2" placeholder="Description">
+                    </textarea>
+                    <div class="ui corner label">
+                        <i class="icon asterisk"></i>
+                    </div>
                 </div>
             </div>
             <div class="ui error message">
                 <div class="header">We noticed some issues</div>
             </div>
-            <input type="submit" class="ui primary button" value="Add">
+            <input type="submit" class="ui primary button" value="Edit">
         </form>
     </div>
 </wicket:panel>

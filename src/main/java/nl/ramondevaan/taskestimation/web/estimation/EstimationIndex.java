@@ -1,6 +1,7 @@
 package nl.ramondevaan.taskestimation.web.estimation;
 
 import nl.ramondevaan.taskestimation.model.domain.Developer;
+import nl.ramondevaan.taskestimation.model.domain.Estimation;
 import nl.ramondevaan.taskestimation.model.view.EstimationRow;
 import nl.ramondevaan.taskestimation.provider.SortableEstimationRowDataProvider;
 import nl.ramondevaan.taskestimation.service.DeveloperService;
@@ -12,11 +13,16 @@ import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.list.AbstractItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -54,34 +60,38 @@ public class EstimationIndex extends Panel {
             @Override
             protected void populateItem(Item<EstimationRow> item) {
                 EstimationRow view          = item.getModelObject();
-                RepeatingView repeatingView = new RepeatingView("dataRow");
 
-                repeatingView.add(new Label(
-                        repeatingView.newChildId(),
+                item.add(new Label(
+                        "taskName",
                         view.getTask().getName()
                 ));
+
+                RepeatingView repeatingView = new RepeatingView("dataRow");
 
                 ValueGetter g;
                 if (developers.stream()
                               .allMatch(view.getEstimations()::containsKey)) {
-                    g = i -> i == null ? "" : String.valueOf(i);
+                    g = i -> i == null ? " " : String.valueOf(i);
                 } else {
-                    g = i -> i == null ? "" : "X";
+                    g = i -> i == null ? " " : "X";
                 }
 
                 for (Developer d : developers) {
-                    //TODO: Link to add/edit page in table
-//                    if(view.getEstimations().containsKey(d)) {
-//                        repeatingView.add(new BookmarkablePageLink<Void>(
-//                                repeatingView.newChildId(),
-//                                EstimationEdit.class,
-//                        ))
-//                    }
+                    AbstractItem abstractItem = new AbstractItem(
+                            repeatingView.newChildId()
+                    );
+                    repeatingView.add(abstractItem);
+                    AbstractLink editLink = getEditLink(
+                            d,
+                            view
+                    );
+                    abstractItem.add(editLink);
 
-                    repeatingView.add(new Label(
-                            repeatingView.newChildId(),
+                    Label valueLabel = new Label(
+                            "value",
                             g.getValue(view.getEstimations().get(d))
-                    ));
+                    );
+                    editLink.add(valueLabel);
                 }
                 item.add(repeatingView);
             }
@@ -103,7 +113,23 @@ public class EstimationIndex extends Panel {
         add(wmc);
     }
 
-    private static interface ValueGetter {
+    private AbstractLink getEditLink(Developer d, EstimationRow row) {
+        Estimation e = new Estimation();
+
+        e.setDeveloper(d);
+        e.setTask(row.getTask());
+        e.setValue(row.getEstimations().getOrDefault(d, 0));
+
+        return new Link("editLink") {
+            @Override
+            public void onClick() {
+                EstimationEditPage page = new EstimationEditPage(e);
+                setResponsePage(page);
+            }
+        };
+    }
+
+    private interface ValueGetter {
         String getValue(Integer i);
     }
 }

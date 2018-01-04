@@ -12,13 +12,17 @@ import javax.inject.Inject;
 public class TaskAddForm extends Form {
     @Inject
     private TaskService service;
-    private Task        taskAdd;
+    private Task        task;
 
     public TaskAddForm(String id) {
+        this(id, new Task());
+    }
+
+    public TaskAddForm(String id, Task task) {
         super(id);
 
-        taskAdd = new Task();
-        setDefaultModel(new CompoundPropertyModel<>(taskAdd));
+        this.task = task;
+        setDefaultModel(new CompoundPropertyModel<>(this.task));
 
         add(new TextField<String>("name"));
         add(new TextArea<>("description"));
@@ -26,8 +30,7 @@ public class TaskAddForm extends Form {
 
     @Override
     protected void onSubmit() {
-        System.out.println("USER PRESSED SUBMIT");
-        System.out.println(taskAdd.toString());
-        service.addTask(taskAdd);
+        service.addTask(this.task);
+        setResponsePage(new TaskIndexPage());
     }
 }

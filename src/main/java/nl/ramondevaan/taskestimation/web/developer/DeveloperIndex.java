@@ -6,19 +6,15 @@ import nl.ramondevaan.taskestimation.service.DeveloperService;
 import nl.ramondevaan.taskestimation.utility.OrderBy;
 import nl.ramondevaan.taskestimation.web.extension.SemanticNumEntriesPicker;
 import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.html.list.AbstractItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.PropertyModel;
 
 import javax.inject.Inject;
-import java.util.stream.LongStream;
 
 public class DeveloperIndex extends Panel {
     @Inject
@@ -33,22 +29,36 @@ public class DeveloperIndex extends Panel {
             protected void populateItem(Item<Developer> item) {
                 Developer     view          = item.getModelObject();
                 RepeatingView repeatingView = new RepeatingView("dataRow");
-                repeatingView.add(new Label(
+
+                repeatingView.add(getCell(
                         repeatingView.newChildId(),
+                        view,
                         view.getGivenName()
                 ));
-                repeatingView.add(new Label(
+                repeatingView.add(getCell(
                         repeatingView.newChildId(),
+                        view,
                         view.getSurnamePrefix()
                 ));
-                repeatingView.add(new Label(
+                repeatingView.add(getCell(
                         repeatingView.newChildId(),
+                        view,
                         view.getSurname()
                 ));
-                repeatingView.add(new Label(
+                repeatingView.add(getCell(
                         repeatingView.newChildId(),
+                        view,
                         view.getEmail()
                 ));
+
+                Link deleteLink = new Link("deleteAction") {
+                    @Override
+                    public void onClick() {
+                        service.removeDeveloper(view.getId());
+                    }
+                };
+                item.add(deleteLink);
+
                 item.add(repeatingView);
             }
         };
@@ -82,5 +92,21 @@ public class DeveloperIndex extends Panel {
 
         add(new SemanticPagingNavigator("navigator", dataView));
         add(new SemanticNumEntriesPicker("numEntries", dataView));
+    }
+
+    private AbstractItem getCell(String id, Developer d, String value) {
+        AbstractItem item  = new AbstractItem(id);
+        Label        label = new Label("cellValue", value);
+        Link link = new Link("cellLink") {
+            @Override
+            public void onClick() {
+                setResponsePage(new DeveloperEditPage(d));
+            }
+        };
+
+        item.add(link);
+        link.add(label);
+
+        return item;
     }
 }
