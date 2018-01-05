@@ -6,8 +6,12 @@ import nl.ramondevaan.taskestimation.model.domain.Task;
 import nl.ramondevaan.taskestimation.service.DeveloperService;
 import nl.ramondevaan.taskestimation.service.EstimationService;
 import nl.ramondevaan.taskestimation.service.TaskService;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.validation.validator.RangeValidator;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -34,7 +38,7 @@ public class EstimationAddForm extends Form {
 
         setDefaultModel(new CompoundPropertyModel<>(estimation));
 
-        add(new DropDownChoice<>(
+        DropDownChoice<Developer> developer = new DropDownChoice<>(
                 "developer",
                 estimation.getDeveloper() != null ?
                         Collections.singletonList(estimation.getDeveloper()) :
@@ -46,8 +50,11 @@ public class EstimationAddForm extends Form {
                         return object.getFullName();
                     }
                 }
-        ));
-        add(new DropDownChoice<>(
+        );
+        developer.setRequired(true);
+        add(developer);
+
+        DropDownChoice<Task> task = new DropDownChoice<>(
                 "task",
                 estimation.getTask() != null ?
                         Collections.singletonList(estimation.getTask()) :
@@ -58,8 +65,14 @@ public class EstimationAddForm extends Form {
                         return object.getName();
                     }
                 }
-        ));
-        add(new NumberTextField<Integer>("value"));
+        );
+        task.setRequired(true);
+        add(task);
+
+        NumberTextField<Integer> value = new NumberTextField<>("value");
+        value.add(RangeValidator.minimum(1));
+        value.setRequired(true);
+        add(value);
     }
 
     @Override

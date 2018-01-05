@@ -10,22 +10,22 @@ import nl.ramondevaan.taskestimation.service.TaskService;
 import nl.ramondevaan.taskestimation.utility.OrderBy;
 import nl.ramondevaan.taskestimation.web.extension.SemanticNumEntriesPicker;
 import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
+import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.AbstractItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EstimationIndex extends Panel {
@@ -59,7 +59,7 @@ public class EstimationIndex extends Panel {
         DataView<EstimationRow> dataView = new DataView<EstimationRow>("rows", dp) {
             @Override
             protected void populateItem(Item<EstimationRow> item) {
-                EstimationRow view          = item.getModelObject();
+                EstimationRow view = item.getModelObject();
 
                 item.add(new Label(
                         "taskName",
@@ -69,11 +69,14 @@ public class EstimationIndex extends Panel {
                 RepeatingView repeatingView = new RepeatingView("dataRow");
 
                 ValueGetter g;
+                boolean     allContained;
                 if (developers.stream()
                               .allMatch(view.getEstimations()::containsKey)) {
                     g = i -> i == null ? "N\\A" : String.valueOf(i);
+                    allContained = true;
                 } else {
-                    g = i -> i == null ? "N\\A" : "X";
+                    g = i -> "";
+                    allContained = false;
                 }
 
                 for (Developer d : developers) {
@@ -87,10 +90,40 @@ public class EstimationIndex extends Panel {
                     );
                     abstractItem.add(editLink);
 
+                    Label iconLabel = new Label(
+                            "icon"
+                    );
+
+                    if (!allContained) {
+                        if (view.getEstimations().containsKey(d)) {
+                            iconLabel.add(new ClassAttributeModifier() {
+                                @Override
+                                protected Set<String> update(Set<String> oldClasses) {
+                                    Set<String> ret = new HashSet<>(oldClasses);
+                                    ret.add("checkmark");
+                                    ret.add("icon");
+                                    return ret;
+                                }
+                            });
+                        } else {
+                            iconLabel.add(new ClassAttributeModifier() {
+                                @Override
+                                protected Set<String> update(Set<String> oldClasses) {
+                                    Set<String> ret = new HashSet<>(oldClasses);
+                                    ret.add("help");
+                                    ret.add("icon");
+                                    return ret;
+                                }
+                            });
+                        }
+                    }
+
                     Label valueLabel = new Label(
                             "value",
                             g.getValue(view.getEstimations().get(d))
                     );
+
+                    editLink.add(iconLabel);
                     editLink.add(valueLabel);
                 }
                 item.add(repeatingView);

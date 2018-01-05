@@ -18,3 +18,9 @@ body {
     margin: 5em 0em 0em;
     padding: 5em 0em;
 }
+
+.feedbackPanel {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}

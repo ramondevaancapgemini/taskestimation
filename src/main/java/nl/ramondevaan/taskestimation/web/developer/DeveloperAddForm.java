@@ -6,6 +6,8 @@ import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.apache.wicket.validation.validator.StringValidator;
 
 import javax.inject.Inject;
 
@@ -24,10 +26,25 @@ public class DeveloperAddForm extends Form {
         this.developer = developer;
         setDefaultModel(new CompoundPropertyModel<>(this.developer));
 
-        add(new EmailTextField("email"));
-        add(new TextField<String>("givenName"));
-        add(new TextField<String>("surnamePrefix"));
-        add(new TextField<String>("surname"));
+        EmailTextField email = new EmailTextField("email");
+        email.add(EmailAddressValidator.getInstance());
+        email.setRequired(true);
+        add(email);
+
+        TextField<String> givenName = new TextField<>("givenName");
+        givenName.add(StringValidator.minimumLength(2));
+        givenName.setRequired(true);
+        add(givenName);
+
+        TextField<String> surnamePrefix = new TextField<>("surnamePrefix");
+        surnamePrefix.setRequired(false);
+        surnamePrefix.add(StringValidator.minimumLength(1));
+        add(surnamePrefix);
+
+        TextField<String> surname = new TextField<>("surname");
+        surname.setRequired(true);
+        surname.add(StringValidator.minimumLength(2));
+        add(surname);
     }
 
     @Override

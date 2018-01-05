@@ -2,17 +2,22 @@ package nl.ramondevaan.taskestimation.web.task;
 
 import nl.ramondevaan.taskestimation.model.domain.Task;
 import nl.ramondevaan.taskestimation.service.TaskService;
+import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.validation.validator.StringValidator;
 
 import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TaskAddForm extends Form {
     @Inject
-    private TaskService service;
-    private Task        task;
+    private TaskService   service;
+    private Task          task;
 
     public TaskAddForm(String id) {
         this(id, new Task());
@@ -24,8 +29,30 @@ public class TaskAddForm extends Form {
         this.task = task;
         setDefaultModel(new CompoundPropertyModel<>(this.task));
 
-        add(new TextField<String>("name"));
-        add(new TextArea<>("description"));
+        TextField<String> name = new TextField<>("name");
+        name.setRequired(true);
+        name.add(StringValidator.minimumLength(1));
+        add(name);
+
+        TextArea<String> description = new TextArea<>("description");
+        description.setRequired(true);
+        description.add(StringValidator.minimumLength(1));
+        add(description);
+
+        FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackErrors");
+        feedbackPanel.add(new ClassAttributeModifier() {
+            @Override
+            protected Set<String> update(Set<String> oldClasses) {
+                Set<String> ret = new HashSet<>(oldClasses);
+
+                if(feedbackPanel.hasFeedbackMessage()) {
+                    ret.add("visible");
+                }
+
+                return ret;
+            }
+        });
+        add(feedbackPanel);
     }
 
     @Override
