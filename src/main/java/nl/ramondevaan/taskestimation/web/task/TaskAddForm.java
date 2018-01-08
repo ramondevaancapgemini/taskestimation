@@ -33,6 +33,7 @@ public class TaskAddForm extends Form {
         name.setRequired(true);
         name.add(StringValidator.minimumLength(1));
         add(name);
+//        name.setModelValue(new String[]{getString("FeedbackMessage.CSS.fatal")});
 
         TextArea<String> description = new TextArea<>("description");
         description.setRequired(true);
@@ -40,18 +41,6 @@ public class TaskAddForm extends Form {
         add(description);
 
         FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackErrors");
-        feedbackPanel.add(new ClassAttributeModifier() {
-            @Override
-            protected Set<String> update(Set<String> oldClasses) {
-                Set<String> ret = new HashSet<>(oldClasses);
-
-                if(feedbackPanel.hasFeedbackMessage()) {
-                    ret.add("visible");
-                }
-
-                return ret;
-            }
-        });
         add(feedbackPanel);
     }
 

@@ -5,6 +5,7 @@ import nl.ramondevaan.taskestimation.service.DeveloperService;
 import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.StringValidator;
@@ -45,6 +46,9 @@ public class DeveloperAddForm extends Form {
         surname.setRequired(true);
         surname.add(StringValidator.minimumLength(2));
         add(surname);
+
+        FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackErrors");
+        add(feedbackPanel);
     }
 
     @Override

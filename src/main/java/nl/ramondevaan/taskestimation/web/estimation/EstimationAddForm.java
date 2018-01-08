@@ -6,10 +6,13 @@ import nl.ramondevaan.taskestimation.model.domain.Task;
 import nl.ramondevaan.taskestimation.service.DeveloperService;
 import nl.ramondevaan.taskestimation.service.EstimationService;
 import nl.ramondevaan.taskestimation.service.TaskService;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.NumberTextField;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 
@@ -73,6 +76,9 @@ public class EstimationAddForm extends Form {
         value.add(RangeValidator.minimum(1));
         value.setRequired(true);
         add(value);
+
+        FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackErrors");
+        add(feedbackPanel);
     }
 
     @Override

@@ -17,7 +17,7 @@
     <div class="ui form segment">
         <form wicket:id="developerEdit">
             <div class="field">
-                <label>Email</label>
+                <label wicket:for="email"><wicket:label>Email</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="email" type="email" placeholder="Email">
                     <i class="mail outline icon"></i>
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="field">
-                <label>Given name</label>
+                <label wicket:for="givenName"><wicket:label>Given name</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="givenName" type="text"
                            placeholder="Given name">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="field">
-                <label>Surname prefix</label>
+                <label wicket:for="surnamePrefix"><wicket:label>Surname prefix</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="surnamePrefix" type="text"
                            placeholder="Surname prefix">
@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="field">
-                <label>Surname</label>
+                <label wicket:for="surname"><wicket:label>Surname</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="surname" type="text"
                            placeholder="Surname">
@@ -59,8 +59,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ui error message">
-                <div class="header">We noticed some issues</div>
+            <div wicket:id="feedbackErrors" class="field">
             </div>
             <input type="submit" class="ui primary button" value="Add">
         </form>

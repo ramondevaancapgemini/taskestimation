@@ -17,26 +17,25 @@
     <div class="ui form segment">
         <form wicket:id="estimationEdit">
             <div class="field">
-                <label>Developer</label>
+                <label wicket:for="developer"><wicket:label>Developer</wicket:label></label>
                 <select wicket:id="developer" class="ui fluid dropdown disabled">
 
                 </select>
             </div>
             <div class="field">
-                <label>Task</label>
+                <label wicket:for="task"><wicket:label>Task</wicket:label></label>
                 <select wicket:id="task" class="ui fluid dropdown disabled">
 
                 </select>
             </div>
             <div class="field">
-                <label>Value</label>
+                <label wicket:for="value"><wicket:label>Story points</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="value" type="number" placeholder="Value in story points" min="1">
                     <i class="hourglass empty icon"></i>
                 </div>
             </div>
-            <div class="ui error message">
-                <div class="header">We noticed some issues</div>
+            <div wicket:id="feedbackErrors" class="field">
             </div>
             <input type="submit" class="ui primary button" value="Add">
         </form>

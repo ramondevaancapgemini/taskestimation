@@ -17,7 +17,7 @@
     <div class="ui form segment">
         <form wicket:id="taskEdit">
             <div class="field">
-                <label>Name</label>
+                <label wicket:for="name"><wicket:label>Name</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <input wicket:id="name" type="text" placeholder="Name">
                     <i class="tag icon"></i>
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="field">
-                <label>Description</label>
+                <label wicket:for="description"><wicket:label>Description</wicket:label></label>
                 <div class="ui left labeled left icon input">
                     <textarea wicket:id="description" rows="2" placeholder="Description">
                     </textarea>
@@ -36,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <div wicket:id="feedbackErrors">
+            <div wicket:id="feedbackErrors" class="field">
             </div>
             <input type="submit" class="ui primary button" value="Add">
         </form>
