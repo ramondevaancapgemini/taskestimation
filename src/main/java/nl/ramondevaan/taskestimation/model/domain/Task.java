@@ -13,9 +13,7 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode(of = {"id"})
 @ToString(exclude = {"estimations"})
-public class Task implements Serializable {
-    public final static long serialVersionUID = 1L;
-
+public class Task {
     @Id
     @GeneratedValue
     private Long    id;

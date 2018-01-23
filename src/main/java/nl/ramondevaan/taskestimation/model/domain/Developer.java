@@ -19,9 +19,7 @@ import java.util.stream.Stream;
 @Entity
 @EqualsAndHashCode(of = { "id" })
 @ToString(exclude = { "estimations" })
-public class Developer implements Serializable {
-    public final static long serialVersionUID = 1L;
-
+public class Developer {
     @Id
     @GeneratedValue
     private Long id;

@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 
 import javax.inject.Inject;
 
@@ -27,34 +29,33 @@ public class DeveloperIndex extends Panel {
         DataView<Developer> dataView = new DataView<Developer>("rows", dp) {
             @Override
             protected void populateItem(Item<Developer> item) {
-                Developer     view          = item.getModelObject();
                 RepeatingView repeatingView = new RepeatingView("dataRow");
 
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getGivenName()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "givenName")
                 ));
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getSurnamePrefix()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "surnamePrefix")
                 ));
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getSurname()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "surname")
                 ));
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getEmail()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "email")
                 ));
 
                 Link deleteLink = new Link("deleteAction") {
                     @Override
                     public void onClick() {
-                        service.removeDeveloper(view.getId());
+                        service.removeDeveloper(item.getModelObject().getId());
                     }
                 };
                 item.add(deleteLink);
@@ -94,7 +95,7 @@ public class DeveloperIndex extends Panel {
         add(new SemanticNumEntriesPicker("numEntries", dataView));
     }
 
-    private AbstractItem getCell(String id, Developer d, String value) {
+    private AbstractItem getCell(String id, IModel<Developer> d, IModel<?> value) {
         AbstractItem item  = new AbstractItem(id);
         Label        label = new Label("cellValue", value);
         Link link = new Link("cellLink") {

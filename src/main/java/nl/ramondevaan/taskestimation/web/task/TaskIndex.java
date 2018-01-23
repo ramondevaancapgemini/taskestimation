@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 
 import javax.inject.Inject;
 
@@ -27,24 +29,23 @@ public class TaskIndex extends Panel {
         DataView<Task> dataView = new DataView<Task>("rows", dp) {
             @Override
             protected void populateItem(Item<Task> item) {
-                Task          view          = item.getModelObject();
                 RepeatingView repeatingView = new RepeatingView("dataRow");
 
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getName()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "name")
                 ));
                 repeatingView.add(getCell(
                         repeatingView.newChildId(),
-                        view,
-                        view.getDescription()
+                        item.getModel(),
+                        new PropertyModel<>(item.getModel(), "description")
                 ));
 
                 Link deleteLink = new Link("deleteAction") {
                     @Override
                     public void onClick() {
-                        service.removeTask(view.getId());
+                        service.removeTask(item.getModelObject().getId());
                     }
                 };
                 item.add(deleteLink);
@@ -72,7 +73,7 @@ public class TaskIndex extends Panel {
         add(new SemanticNumEntriesPicker("numEntries", dataView));
     }
 
-    private AbstractItem getCell(String id, Task t, String value) {
+    private AbstractItem getCell(String id, IModel<Task> t, IModel<?> value) {
         AbstractItem item  = new AbstractItem(id);
         Label        label = new Label("cellValue", value);
         Link link = new Link("cellLink") {

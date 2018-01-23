@@ -9,11 +9,12 @@ import org.apache.wicket.model.LoadableDetachableModel;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DetachableTask extends LoadableDetachableModel<Task> {
-    private final           long        id;
+    private final           Long        id;
     private final transient TaskService service;
 
     @Override
     protected Task load() {
-        return service.getTask(this.id);
+        return id == null ? new Task() :
+                service.getTask(this.id);
     }
 }

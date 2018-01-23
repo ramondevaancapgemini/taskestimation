@@ -9,11 +9,12 @@ import org.apache.wicket.model.LoadableDetachableModel;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DetachableEstimation extends LoadableDetachableModel<Estimation> {
-    private final           long              id;
+    private final           Long              id;
     private final transient EstimationService service;
 
     @Override
     protected Estimation load() {
-        return service.getEstimation(this.id);
+        return this.id == null ? new Estimation() :
+                service.getEstimation(id);
     }
 }

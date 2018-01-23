@@ -13,9 +13,7 @@ import java.time.Instant;
 @Data
 @Entity
 @EqualsAndHashCode(of = { "id" })
-public class Estimation implements Serializable {
-    public final static long serialVersionUID = 1L;
-
+public class Estimation {
     @Id
     @GeneratedValue
     private Long id;

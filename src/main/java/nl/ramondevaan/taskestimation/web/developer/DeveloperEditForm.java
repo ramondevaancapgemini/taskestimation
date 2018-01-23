@@ -7,28 +7,23 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 
 import javax.inject.Inject;
 
-public class DeveloperAddForm extends Form {
+public class DeveloperEditForm extends Form<Developer> {
     @Inject
     private DeveloperService service;
 
-    private String email;
-    private String givenName;
-    private String surnamePrefix;
-    private String surname;
-
-    public DeveloperAddForm(String id) {
-        super(id);
+    public DeveloperEditForm(String id, IModel<Developer> model) {
+        super(id, new CompoundPropertyModel<>(model));
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        setDefaultModel(new CompoundPropertyModel<>(this));
 
         EmailTextField email = new EmailTextField("email");
         email.add(EmailAddressValidator.getInstance());
@@ -56,13 +51,7 @@ public class DeveloperAddForm extends Form {
 
     @Override
     protected void onSubmit() {
-        Developer d = new Developer();
-        d.setEmail(email);
-        d.setGivenName(givenName);
-        d.setSurnamePrefix(surnamePrefix);
-        d.setSurname(surname);
-
-        service.addDeveloper(d);
+        service.addDeveloper(getModelObject());
         setResponsePage(new DeveloperIndexPage());
     }
 }

@@ -9,11 +9,12 @@ import org.apache.wicket.model.LoadableDetachableModel;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DetachableDeveloper extends LoadableDetachableModel<Developer> {
-    private final           long             id;
+    private final           Long             id;
     private final transient DeveloperService service;
 
     @Override
     protected Developer load() {
-        return service.getDeveloper(this.id);
+        return id == null ? new Developer() :
+                service.getDeveloper(this.id);
     }
 }

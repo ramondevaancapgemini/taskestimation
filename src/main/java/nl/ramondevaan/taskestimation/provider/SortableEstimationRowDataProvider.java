@@ -1,8 +1,8 @@
 package nl.ramondevaan.taskestimation.provider;
 
 import nl.ramondevaan.taskestimation.model.db.DetachableEstimationRow;
+import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.view.EstimationRow;
-import nl.ramondevaan.taskestimation.service.EstimationService;
 import nl.ramondevaan.taskestimation.service.TaskService;
 import nl.ramondevaan.taskestimation.utility.OffsetBasedPageRequest;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -12,12 +12,18 @@ import org.apache.wicket.model.IModel;
 import org.springframework.data.domain.Sort;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class SortableEstimationRowDataProvider extends SortableDataProvider<EstimationRow, String> {
-    private final TaskService       taskService;
+    private final TaskService taskService;
+    private final IModel<List<Developer>> developers;
 
-    public SortableEstimationRowDataProvider(TaskService taskService) {
+    public SortableEstimationRowDataProvider(
+            TaskService taskService,
+            IModel<List<Developer>> developers
+    ) {
         this.taskService = taskService;
+        this.developers = developers;
 
         setSort("name", SortOrder.ASCENDING);
     }
@@ -32,7 +38,7 @@ public class SortableEstimationRowDataProvider extends SortableDataProvider<Esti
                 ))
                 .getContent()
                 .stream()
-                .map(EstimationRow::create)
+                .map(t -> EstimationRow.create(t, developers.getObject()))
                 .iterator();
     }
 
@@ -43,7 +49,7 @@ public class SortableEstimationRowDataProvider extends SortableDataProvider<Esti
 
     @Override
     public IModel<EstimationRow> model(EstimationRow object) {
-        return new DetachableEstimationRow(object.getTask().getId(), taskService);
+        return new DetachableEstimationRow(object.getTask().getId(), developers, taskService);
     }
 
     private Sort getJpaSort() {

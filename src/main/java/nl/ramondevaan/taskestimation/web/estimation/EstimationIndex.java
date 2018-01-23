@@ -1,5 +1,6 @@
 package nl.ramondevaan.taskestimation.web.estimation;
 
+import nl.ramondevaan.taskestimation.model.db.DetachableEstimation;
 import nl.ramondevaan.taskestimation.model.domain.Developer;
 import nl.ramondevaan.taskestimation.model.domain.Estimation;
 import nl.ramondevaan.taskestimation.model.view.EstimationRow;
@@ -13,6 +14,7 @@ import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
 import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -21,11 +23,12 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class EstimationIndex extends Panel {
@@ -39,13 +42,24 @@ public class EstimationIndex extends Panel {
     public EstimationIndex(String id) {
         super(id);
 
-        List<Developer> developers = developerService
-                .getAllDevelopers()
-                .collect(Collectors.toList());
+        final Comparator<Developer> devComp = Comparator
+                .comparing(Developer::getSurname)
+                .thenComparing(Developer::getGivenName)
+                .thenComparing(Developer::getCreated);
+
+        IModel<List<Developer>> developers = new LoadableDetachableModel<List<Developer>>() {
+            @Override
+            protected List<Developer> load() {
+                return developerService
+                        .getAllDevelopers()
+                        .sorted(devComp)
+                        .collect(Collectors.toList());
+            }
+        };
 
         RepeatingView headers = new RepeatingView("headerRow");
 
-        for (Developer d : developers) {
+        for (Developer d : developers.getObject()) {
             headers.add(new Label(
                     headers.newChildId(),
                     d.getFullName()
@@ -55,7 +69,7 @@ public class EstimationIndex extends Panel {
         add(headers);
 
         SortableEstimationRowDataProvider dp =
-                new SortableEstimationRowDataProvider(taskService);
+                new SortableEstimationRowDataProvider(taskService, developers);
         DataView<EstimationRow> dataView = new DataView<EstimationRow>("rows", dp) {
             @Override
             protected void populateItem(Item<EstimationRow> item) {
@@ -66,66 +80,58 @@ public class EstimationIndex extends Panel {
                         view.getTask().getName()
                 ));
 
-                RepeatingView repeatingView = new RepeatingView("dataRow");
+                final RepeatingView repeatingView = new RepeatingView("dataRow");
 
-                ValueGetter g;
-                boolean     allContained;
-                if (developers.stream()
-                              .allMatch(view.getEstimations()::containsKey)) {
-                    g = i -> i == null ? "N\\A" : String.valueOf(i);
-                    allContained = true;
-                } else {
-                    g = i -> "";
-                    allContained = false;
-                }
+                final boolean allSet = view.allSet();
 
-                for (Developer d : developers) {
-                    AbstractItem abstractItem = new AbstractItem(
-                            repeatingView.newChildId()
-                    );
-                    repeatingView.add(abstractItem);
-                    AbstractLink editLink = getEditLink(
-                            d,
-                            view
-                    );
-                    abstractItem.add(editLink);
+                BiFunction<String, Estimation, Label> iconLabelFun = (id, e) -> {
+                    Label label = new Label(id);
 
-                    Label iconLabel = new Label(
-                            "icon"
-                    );
+                    if (allSet) {
+                        Collection<String> classes = e == null ?
+                                Arrays.asList("icon", "checkmark") :
+                                Arrays.asList("icon", "help");
 
-                    if (!allContained) {
-                        if (view.getEstimations().containsKey(d)) {
-                            iconLabel.add(new ClassAttributeModifier() {
-                                @Override
-                                protected Set<String> update(Set<String> oldClasses) {
-                                    Set<String> ret = new HashSet<>(oldClasses);
-                                    ret.add("checkmark");
-                                    ret.add("icon");
-                                    return ret;
-                                }
-                            });
-                        } else {
-                            iconLabel.add(new ClassAttributeModifier() {
-                                @Override
-                                protected Set<String> update(Set<String> oldClasses) {
-                                    Set<String> ret = new HashSet<>(oldClasses);
-                                    ret.add("help");
-                                    ret.add("icon");
-                                    return ret;
-                                }
-                            });
-                        }
+                        label.add(new ClassAttributeModifier() {
+                            @Override
+                            protected Set<String> update(Set<String> oldClasses) {
+                                Set<String> ret = new HashSet<>(oldClasses);
+                                ret.addAll(classes);
+                                return ret;
+                            }
+                        });
                     }
 
-                    Label valueLabel = new Label(
-                            "value",
-                            g.getValue(view.getEstimations().get(d))
-                    );
+                    return label;
+                };
+                final BiFunction<String, Estimation, Label> valueLabelFun = allSet ?
+                        (id, e) -> new Label(id, "") :
+                        (id, e) -> new Label(
+                                id,
+                                e == null ?
+                                        "N\\A" :
+                                        String.valueOf(e.getValue())
+                        );
 
-                    editLink.add(iconLabel);
-                    editLink.add(valueLabel);
-                }
+                view.getEstimations()
+                    .entrySet()
+                    .stream()
+                    .sorted(Comparator.comparing(Map.Entry::getKey, devComp))
+                    .forEachOrdered(e -> {
+                        AbstractItem abstractItem = new AbstractItem(
+                                repeatingView.newChildId()
+                        );
+                        repeatingView.add(abstractItem);
+                        AbstractLink editLink = getEditLink(
+                                e.getKey(),
+                                view
+                        );
+                        abstractItem.add(editLink);
+
+                        editLink.add(iconLabelFun.apply("icon", e.getValue()));
+                        editLink.add(valueLabelFun.apply("value", e.getValue()));
+                    });
+
                 item.add(repeatingView);
             }
         };
@@ -140,23 +146,24 @@ public class EstimationIndex extends Panel {
         add(dataView);
 
         WebMarkupContainer wmc = new WebMarkupContainer("footer");
-        wmc.add(new AttributeAppender("colspan", developers.size() + 1));
+        wmc.add(new AttributeAppender("colspan", developers.getObject().size() + 1));
         wmc.add(new SemanticPagingNavigator("navigator", dataView));
         wmc.add(new SemanticNumEntriesPicker("numEntries", dataView));
         add(wmc);
     }
 
-    private AbstractLink getEditLink(Developer d, EstimationRow row) {
-        Estimation e = new Estimation();
-
-        e.setDeveloper(d);
-        e.setTask(row.getTask());
-        e.setValue(row.getEstimations().getOrDefault(d, 0));
+    private AbstractLink getEditLink(IModel<Developer> d, IModel<EstimationRow> row) {
+        Estimation e = row.getObject().getEstimations().get(d.getObject());
+        WebPage page = e == null ? new EstimationAddPage() :
+                new EstimationEditPage(new DetachableEstimation(
+                        e.getId(),
+                        estimationService
+                )
+                );
 
         return new Link("editLink") {
             @Override
             public void onClick() {
-                EstimationEditPage page = new EstimationEditPage(e);
                 setResponsePage(page);
             }
         };
