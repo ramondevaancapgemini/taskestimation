@@ -24,6 +24,11 @@ public class DeveloperIndex extends Panel {
 
     public DeveloperIndex(String id) {
         super(id);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         SortableDeveloperDataProvider dp = new SortableDeveloperDataProvider(service);
         DataView<Developer> dataView = new DataView<Developer>("rows", dp) {

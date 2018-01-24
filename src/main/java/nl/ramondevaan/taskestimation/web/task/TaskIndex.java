@@ -24,6 +24,11 @@ public class TaskIndex extends Panel {
 
     public TaskIndex(String id) {
         super(id);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         SortableTaskDataProvider dp = new SortableTaskDataProvider(service);
         DataView<Task> dataView = new DataView<Task>("rows", dp) {
