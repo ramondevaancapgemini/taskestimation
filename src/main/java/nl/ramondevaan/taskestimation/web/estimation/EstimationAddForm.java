@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 
@@ -18,7 +19,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EstimationAddForm extends Form {
+public class EstimationAddForm extends Form<Estimation> {
     @Inject
     private EstimationService estimationService;
     @Inject
@@ -26,19 +27,21 @@ public class EstimationAddForm extends Form {
     @Inject
     private TaskService       taskService;
 
-    private DropDownChoice<Developer> developer;
-    private DropDownChoice<Task> task;
-    private NumberTextField<Integer> value;
-
     public EstimationAddForm(String id) {
-        super(id);
+        super(id, new CompoundPropertyModel<>(
+                new LoadableDetachableModel<Estimation>() {
+                    @Override
+                    protected Estimation load() {
+                        return new Estimation();
+                    }
+                }));
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
 
-        developer = new DropDownChoice<>(
+        DropDownChoice<Developer> devChoice = new DropDownChoice<>(
                 "developer",
                 new LoadableDetachableModel<List<Developer>>() {
                     @Override
@@ -55,10 +58,10 @@ public class EstimationAddForm extends Form {
                     }
                 }
         );
-        developer.setRequired(true);
-        add(developer);
+        devChoice.setRequired(true);
+        add(devChoice);
 
-        task = new DropDownChoice<>(
+        DropDownChoice<Task> taskChoice = new DropDownChoice<>(
                 "task",
                 new LoadableDetachableModel<List<Task>>() {
                     @Override
@@ -75,14 +78,14 @@ public class EstimationAddForm extends Form {
                     }
                 }
         );
-        task.setRequired(true);
-        add(task);
+        taskChoice.setRequired(true);
+        add(taskChoice);
 
         RangeValidator<Integer> rangeValidator = RangeValidator.minimum(1);
-        value = new NumberTextField<>("value");
-        value.add(rangeValidator);
-        value.setRequired(true);
-        add(value);
+        NumberTextField<Integer> valueField = new NumberTextField<>("value");
+        valueField.add(rangeValidator);
+        valueField.setRequired(true);
+        add(valueField);
 
         FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackErrors");
         add(feedbackPanel);
@@ -90,12 +93,7 @@ public class EstimationAddForm extends Form {
 
     @Override
     protected void onSubmit() {
-        Estimation e = new Estimation();
-        e.setDeveloper(developer.getModelObject());
-        e.setTask(task.getModelObject());
-        e.setValue(value.getModelObject());
-
-        estimationService.addEstimation(e);
+        estimationService.addEstimation(getModelObject());
         setResponsePage(new EstimationIndexPage());
     }
 }
