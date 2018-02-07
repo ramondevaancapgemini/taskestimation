@@ -10,12 +10,9 @@ import nl.ramondevaan.taskestimation.service.TaskService;
 import nl.ramondevaan.taskestimation.utility.OrderBy;
 import nl.ramondevaan.taskestimation.web.extension.SemanticNumEntriesPicker;
 import nl.ramondevaan.taskestimation.web.extension.SemanticPagingNavigator;
-import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -29,6 +26,8 @@ import org.apache.wicket.model.PropertyModel;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class EstimationIndex extends Panel {
@@ -47,7 +46,8 @@ public class EstimationIndex extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
-        IModel<List<Developer>> developers = new LoadableDetachableModel<List<Developer>>() {
+        IModel<List<Developer>> developers =
+                new LoadableDetachableModel<List<Developer>>() {
             @Override
             protected List<Developer> load() {
                 return developerService.getAllDevelopers().sorted(Comparator
@@ -66,49 +66,64 @@ public class EstimationIndex extends Panel {
 
         add(headers);
 
-        SortableEstimationRowDataProvider dp = new SortableEstimationRowDataProvider(
-                taskService, developers);
-        DataView<EstimationRow> dataView = new DataView<EstimationRow>("rows",
-                dp) {
+        SortableEstimationRowDataProvider dp =
+                new SortableEstimationRowDataProvider(
+                        taskService,
+                        developers
+                );
+        DataView<EstimationRow> dataView = new DataView<EstimationRow>(
+                "rows",
+                dp
+        ) {
             @Override
             protected void populateItem(Item<EstimationRow> item) {
-                EstimationRow view = item.getModelObject();
-
                 item.add(new Label("taskName",
-                        new PropertyModel<>(item.getModel(), "task.name")));
+                        new PropertyModel<>(
+                                item.getModel(),
+                                "task.name"
+                        )
+                ));
 
-                final boolean allSet = view.allSet();
-
-                ListView<Estimation> estimations = new ListView<Estimation>("dataRow", new PropertyModel<>(item.getModel(), "estimations")) {
+                ListView<Estimation> estimations = new ListView<Estimation>(
+                        "dataRow",
+                        new PropertyModel<>(item.getModel(),
+                                "estimations")
+                ) {
                     @Override
-                    protected void populateItem(ListItem<Estimation> item) {
-                        Link<Estimation> link = new Link<Estimation>("editLink", item.getModel()) {
+                    protected void populateItem(
+                            ListItem<Estimation> innerItem
+                    ) {
+                        ItemState is = new ItemState();
+                        is.rowItem = item;
+                        is.estimationItem = innerItem;
+
+                        Link<Estimation> link = new Link<Estimation>(
+                                "editLink",
+                                innerItem.getModel()
+                        ) {
                             @Override
                             public void onClick() {
-                                EstimationIndex.this.setResponsePage(new EstimationEditPage(getModel()));
+                                EstimationIndex.this.setResponsePage(
+                                        new EstimationEditPage(getModel())
+                                );
                             }
                         };
-                        item.add(link);
+                        innerItem.add(link);
 
-                        Label value = new Label("value", allSet ?
-                                item.getModelObject().getValue() : "");
+                        Label value = new Label(
+                                "value",
+                                item.getModelObject().allSet() ?
+                                        innerItem.getModelObject().getValue() :
+                                        ""
+                        );
                         link.add(value);
 
-                        Label icon = new Label("icon", "");
-                        if(!allSet) {
-                            Collection<String> classes = item.getModelObject().getValue() > 0 ?
-                                    Arrays.asList("icon", "checkmark") :
-                                    Arrays.asList("icon", "help");
+                        Collection<String> cellClasses = getCellClassMap(is);
+                        Collection<String> iconClasses = getIconClasses(is);
 
-                            icon.add(new ClassAttributeModifier() {
-                                @Override
-                                protected Set<String> update(Set<String> oldClasses) {
-                                    Set<String> ret = new HashSet<>(oldClasses);
-                                    ret.addAll(classes);
-                                    return ret;
-                                }
-                            });
-                        }
+                        innerItem.add(new ClassAppender(cellClasses));
+                        Label icon = new Label("icon", "");
+                        icon.add(new ClassAppender(iconClasses));
                         link.add(icon);
                     }
                 };
@@ -128,5 +143,98 @@ public class EstimationIndex extends Panel {
         wmc.add(new SemanticPagingNavigator("navigator", dataView));
         wmc.add(new SemanticNumEntriesPicker("numEntries", dataView));
         add(wmc);
+    }
+
+    private Collection<String> getIconClasses(ItemState itemState) {
+        Map<Predicate<ItemState>, ClassSupplier> ret = new HashMap<>();
+
+        ret.put(
+                is -> !is.rowItem.getModelObject().allSet() &&
+                        is.estimationItem.getModelObject().getValue() > 0,
+                () -> Arrays.asList("icon", "checkmark")
+        );
+        ret.put(
+                is -> !is.rowItem.getModelObject().allSet() &&
+                        is.estimationItem.getModelObject().getValue() <= 0,
+                () -> Arrays.asList("icon", "help")
+        );
+        ret.put(
+                is -> is.rowItem.getModelObject().allSet() &&
+                        !is.rowItem.getModelObject().allEstimationsEqual() &&
+                        Objects.equals(
+                                is.estimationItem.getModelObject().getValue(),
+                                is.rowItem.getModelObject().largestEstimation()
+                        ),
+                () -> Arrays.asList("icon", "angle", "double", "up")
+        );
+        ret.put(
+                is -> is.rowItem.getModelObject().allSet() &&
+                        !is.rowItem.getModelObject().allEstimationsEqual() &&
+                        Objects.equals(
+                                is.estimationItem.getModelObject().getValue(),
+                                is.rowItem.getModelObject().smallestEstimation()
+                        ),
+                () -> Arrays.asList("icon", "angle", "double", "down")
+        );
+
+        return ret
+                .entrySet()
+                .stream()
+                .filter(cc -> cc.getKey().test(itemState))
+                .map(cc -> cc.getValue().get())
+                .findFirst()
+                .orElseGet(Collections::emptySet);
+    }
+
+    private Collection<String> getCellClassMap(ItemState itemState) {
+        Map<Predicate<ItemState>, ClassSupplier> ret = new HashMap<>();
+
+        ret.put(
+                is -> is.rowItem.getModelObject().allSet() &&
+                        !is.rowItem.getModelObject().allEstimationsEqual() &&
+                        Objects.equals(
+                                is.estimationItem.getModelObject().getValue(),
+                                is.rowItem.getModelObject().largestEstimation()
+                        ),
+                () -> Collections.singletonList("positive")
+        );
+        ret.put(
+                is -> is.rowItem.getModelObject().allSet() &&
+                        !is.rowItem.getModelObject().allEstimationsEqual() &&
+                        Objects.equals(
+                                is.estimationItem.getModelObject().getValue(),
+                                is.rowItem.getModelObject().smallestEstimation()
+                        ),
+                () -> Collections.singletonList("negative")
+        );
+
+        return ret
+                .entrySet()
+                .stream()
+                .filter(cc -> cc.getKey().test(itemState))
+                .map(cc -> cc.getValue().get())
+                .findFirst()
+                .orElseGet(Collections::emptySet);
+    }
+
+    private class ItemState {
+        private Item<EstimationRow> rowItem;
+        private ListItem<Estimation> estimationItem;
+    }
+
+    private interface ClassSupplier extends Supplier<Collection<String>> {
+
+    }
+
+    private class ClassAppender extends AttributeAppender {
+
+        private ClassAppender(Collection<String> classes) {
+            super(
+                    "class",
+                    classes.stream()
+                           .collect(Collectors.joining(" ")),
+                    " "
+            );
+        }
     }
 }

@@ -20,6 +20,30 @@ public class EstimationRow {
         return estimations.stream().allMatch(e -> e.getValue() > 0);
     }
 
+    public Integer largestEstimation() {
+        return estimations
+                .stream()
+                .map(Estimation::getValue)
+                .max(Integer::compareTo)
+                .orElse(null);
+    }
+
+    public Integer smallestEstimation() {
+        return estimations
+                .stream()
+                .map(Estimation::getValue)
+                .min(Integer::compareTo)
+                .orElse(null);
+    }
+
+    public boolean allEstimationsEqual() {
+        return estimations
+                .stream()
+                .mapToInt(Estimation::getValue)
+                .distinct()
+                .count() <= 1;
+    }
+
     public static EstimationRow create(Task task, List<Developer> developers) {
         List<Estimation> list = developers.stream()
                 .map(d -> task.getEstimations().stream()
